@@ -478,9 +478,9 @@ table, table td, table th {
     border: 2px solid gray; }
 
   .project {
-    background-color: #eee;
+    background-color: #e8e8e8;
+    border: 1px solid #424242;
     padding: 15px 10px;
-    border: 1px solid #ccc;
     border-radius: 8px;
     margin-bottom: 10px;
     overflow: hidden; }
@@ -515,11 +515,12 @@ a.page-link {
   padding: 8px; }
 
 a.page-link.active {
-  background-color: #eee; }
+  background-color: #e8e8e8; }
 
 a.view-my-resume {
   -moz-border-radius: .35714285714286em;
   border-radius: .35714285714286em;
   background-color: #e8e8e8;
   border: 1px solid #424242;
-  padding: 5px 10px; }
+  padding: 5px 10px;
+  color: #424242; }
