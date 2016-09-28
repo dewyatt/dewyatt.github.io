@@ -1,0 +1,71 @@
+---
+- name: Pastely
+  description: 'Pastely is an online code paste service using React, Django, Ansible, Docker, and Kubernetes. Note: Limited browser support due to the use of CSS flexbox.'
+  image: 26.png
+  thumbnail: 26t.png
+  links:
+    - name: backend
+      url: https://github.com/dewyatt/pastely-backend
+      icon: github-circled
+    - name: frontend
+      url: https://github.com/dewyatt/pastely-frontend
+      icon: github-circled
+
+- name: nctgpio
+  description: 'FreeBSD driver for the GPIO functionality of the NCT5104D Super I/O chip.'
+  image: 25.jpg
+  thumbnail: 25t.jpg
+  links:
+    - name: youtube
+      url: https://www.youtube.com/watch?v=a1vpRa7-pQY
+      icon: link-ext-alt
+    - name: github
+      url: https://github.com/freebsd/freebsd/commit/b34ec26643bd7ae631628d97a88bd832fe2b1a46
+      icon: github-circled
+
+- name: seagate-leds
+  description: 'Linux utility to control the activity and capacity LEDs on Seagate and Maxtor external hard drives. See the wiki for devices that are known to work.'
+  image: 12.jpg
+  thumbnail: 12t.jpg
+  links:
+    - name: github
+      url: https://github.com/dewyatt/seagate-leds
+      icon: github-circled
+
+- name: fpanelkb
+  description: 'USB HID 8051 firmware for the front panel of a Speco PC Pro DVR.'
+  image: 11.jpg
+  thumbnail: 11t.jpg
+  links:
+    - name: github
+      url: https://github.com/dewyatt/fpanelkb
+      icon: github-circled
+
+- name: vc0706
+  description: 'Library to interface with a VC0706 security camera via a computer serial port. Uses Boost.Asio‎.'
+  image: 19.jpg
+  thumbnail: 19t.jpg
+  links:
+    - name: github
+      url: https://github.com/dewyatt/vc0706
+      icon: github-circled
+
+- name: MCP23008 library for mbed
+  description: 'mbed library for interfacing with a MCP23008 serial I/O expander.'
+  image: 20.jpg
+  thumbnail: 20t.jpg
+  links:
+    - name: mbed.org
+      url: http://mbed.org/users/dewyatt/code/MCP23008/
+      icon: link-ext-alt
+
+- name: sfTTF
+  description: 'TrueType font support for SFML'
+  image: 21.jpg
+  thumbnail: 21t.jpg
+  links:
+    - name: github
+      url: https://github.com/dewyatt/sfttf
+      icon: github-circled
+
+---

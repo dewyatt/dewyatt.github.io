@@ -1,0 +1,7 @@
+---
+- name: Wireshark
+- name: Nautilus
+- name: Epiphany
+- name: GNOME System Log
+- name: TigerVNC
+---

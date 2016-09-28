@@ -1,0 +1,44 @@
+---
+- name: Ubuntu – Type-ahead find in Nautilus
+  description: 'Re-implemented type-ahead find in Nautilus. Code is currently maintained by Canonical and present in Ubuntu 14.04+.'
+  image: 22.jpg
+  thumbnail: 22t.jpg
+  links:
+    - name: bug
+      url: https://bugs.launchpad.net/ubuntu/%2Bsource/nautilus/%2Bbug/1164016
+      icon: link-ext-alt
+    - name: launchpad
+      url: https://launchpad.net/ubuntu/%2Bsource/nautilus/1%3A3.8.2-0ubuntu11
+      icon: link-ext-alt
+
+- name: iPXE bnx2 driver (Google Summer of Code 2012)
+  description: 'Rewrote the bnx2 network card driver from scratch.'
+  image: 24.jpg
+  thumbnail: 24t.jpg
+  links:
+    - name: info
+      url: http://ipxe.org/gsoc/bnx2
+      icon: link-ext-alt
+    - name: git
+      url: https://git.ipxe.org/people/dewyatt/ipxe.git/shortlog/refs/heads/bnx2
+      icon: link-ext-alt
+
+- name: OpenImageIO PSD input plugin (Google Summer of Code 2011)
+  description: 'Wrote the initial plugin for reading Photoshop PSD files.'
+  image: 23.png
+  thumbnail: 23t.png
+  links:
+    - name: github
+      url: https://github.com/OpenImageIO/oiio/blob/011cfae0c26da545c19e2b1c2e535dd5d9c1d1cf/src/psd.imageio/psdinput.cpp
+      icon: github-circled
+
+- name: SDL Windows IME Support (Google Summer of Code 2010)
+  description: 'Added Windows input method support to libsdl, enabling input of CJK languages.'
+  image: 13.jpg
+  thumbnail: 13t.jpg
+  links:
+    - name: hg repo
+      url: http://hg.libsdl.org/SDL/file/3617cec7f0ee/src/video/win32/SDL_win32keyboard.c
+      icon: link-ext-alt
+
+---
