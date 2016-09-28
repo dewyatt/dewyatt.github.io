@@ -21,10 +21,10 @@ $grey-color-light: lighten($grey-color, 40%);
 $grey-color-dark:  darken($grey-color, 25%);
 
 // Width of the content area
-$content-width:    800px;
+$content-width:    1024px;
 
 $on-palm:          600px;
-$on-laptop:        800px;
+$on-laptop:        1024px;
 
 // Minima also includes a mixin for defining media queries.
 // Use media queries like this:
@@ -37,3 +37,93 @@ $on-laptop:        800px;
 
 // Import partials from the `minima` theme.
 @import "minima";
+
+pre, code, kbd, samp {
+  font-family: Cousine, Consolas, "Lucida Console", Monaco, monospace;
+}
+
+table, table td, table th {
+  border: 1px solid black;
+}
+
+.jslghtbx-thmb {
+  margin: 0.2em !important;
+}
+
+@media screen {
+  .note {
+    margin: .875em 0 .875em 0;
+    display: block;
+  }
+
+  .note > span {
+    display: block;
+    /* 16px */
+    font-size: 1.14285714285714em;
+    /* font-style: italic; */
+    margin: .875em 0 .875em 0;
+    padding: 1px .875em;
+    -moz-border-radius: .35714285714286em;
+    border-radius: .35714285714286em;
+    background: #f7f7f7;
+    border: 2px solid gray;
+  }
+  .project {
+    background-color: #eee;
+    padding: 15px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .project img {
+    display: block;
+    margin-right: 10px !important;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #aaa;
+    border-radius: 10px;
+    margin-bottom: 5px;
+  }
+  .project .download {
+    float: right;
+  }
+}
+
+@media only screen and (min-width: 35em) {
+  .project img {
+    float: left;
+    display: inline;
+  }
+  .project-description {
+    margin-left: 120px;
+  }
+}
+
+@media print {
+  .note {
+    margin: .875em 0 .875em 0;
+  }
+  .note {
+    border: solid 1pt black;
+    padding: 0 8pt;
+    page-break-inside: avoid;
+  }
+}
+
+a.page-link {
+  padding: 8px;
+}
+
+a.page-link.active {
+  background-color: #eee;
+}
+
+a.view-my-resume {
+  -moz-border-radius: .35714285714286em;
+  border-radius: .35714285714286em;
+  background-color: $grey-color-light;
+  border: 1px solid $grey-color-dark;
+  padding: 5px 10px;
+}
+

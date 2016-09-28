@@ -1,23 +1,19 @@
 ---
 layout: default
+title: Home
 ---
 
 <div class="home">
 
-  <h1 class="page-heading">Posts</h1>
+  <h1>I automate processes</h1>
+  <p>I believe in automating everything possible, from administrative tasks to software deployments.</p>
+  <h1>I write software</h1>
+  <p>From distributed web applications to low-level device drivers and firmware, I write all kinds of software.</p>
+  <h1>I'm cross-platform</h1>
+  <p>I prefer Linux but have extensive experience in many versions of Windows and some BSD-derivatives.</p>
+  <h1>I'm available</h1>
+  <p>I am currently available to work in the Linux/DevOps space.</p>
 
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-
-        <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title | escape }}</a>
-        </h2>
-      </li>
-    {% endfor %}
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+ <h2><div style="text-align: center; margin-top: 1.2em"><a href="/assets/DanielWyattResume.pdf" class="view-my-resume">View My Resume</a></div></h2>
 
 </div>
