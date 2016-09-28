@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Speco PC Pro (Under the Hood)</title>
+  <meta name="description" content="Introduction">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2013/07/18/speco-pc-pro-under-the-hood/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Speco PC Pro (Under the Hood)</h1>
+    <p class="post-meta"><time datetime="2013-07-18T07:25:55-04:00" itemprop="datePublished">Jul 18, 2013</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">First Impressions</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-3">
+              <a href="#tocAnchor-1-3"><span class="tocnumber">3</span> <span class="toctext">Escaping the Shell</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-4">
+              <a href="#tocAnchor-1-4"><span class="tocnumber">4</span> <span class="toctext">Booting Linux</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-5">
+              <a href="#tocAnchor-1-5"><span class="tocnumber">5</span> <span class="toctext">Running in VirtualBox</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-6">
+              <a href="#tocAnchor-1-6"><span class="tocnumber">6</span> <span class="toctext">Extracting the firmware</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-7">
+              <a href="#tocAnchor-1-7"><span class="tocnumber">7</span> <span class="toctext">Loading the firmware in Linux</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-8">
+              <a href="#tocAnchor-1-8"><span class="tocnumber">8</span> <span class="toctext">Communicating with the firmware</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-9">
+              <a href="#tocAnchor-1-9"><span class="tocnumber">9</span> <span class="toctext">Open-source firmware!</span></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><h1 id="tocAnchor-1-1">Introduction</h1>
+
+<p>I recently acquired a Speco PC Pro (8 channel) DVR.
+It’s a CCTV DVR that a business might use to record the feed from their security cameras.
+What interested me in this DVR was that it is like a standard PC but with some interesting hardware added on (the front panel, the alarm inputs, the output relays, CCTV stuff, etc).
+Here are the major hardware specs:</p>
+
+<ul>
+  <li>AIMB-562 motherboard</li>
+  <li>Intel E2160 (1.8GHz dual-core)</li>
+  <li>1024MiB RAM</li>
+  <li>Nvidia GeForce 9400 GT (128MiB)</li>
+  <li>2GB PQI IDE DiskOnModule flash drive w/write protect switch (Windows XP Embedded)</li>
+</ul>
+
+<p>The front panel of the device is one of the pieces I found interesting.
+It connects via USB, requires a proprietary firmware blob to function, and uses an undocumented protocol.
+I reverse engineered most of this protocol and wrote code to support the LCD, LEDs, and buttons in Linux.
+This article will focus on exploring the front panel and examining the protocol used by the stock firmware.
+The next article will involve writing the open-source replacement firmware.</p>
+
+<h1 id="tocAnchor-1-2">First Impressions</h1>
+
+<p>I didn’t know what software, if any, would be on this device when I purchased it.
+When I fired it up, it booted into the PC Pro software:</p>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/7t.jpg" data-jslghtbx="/assets/images/7.jpg" data-jslghtbx-group="" />
+</p>
+
+<p>I scoured the internet and located a PDF manual: <a href="/assets/PCPro_PCLMan.pdf">PCPro_PCLMan.pdf</a>
+This document confirms that it runs Windows XP Embedded.
+It seemed pretty restricted at first glance.
+It has a (mostly) read-only drive with a ramdisk driver. No taskbar. No alt+tab, ctrl+esc, ctrl+alt+del, etc.</p>
+
+<h1 id="tocAnchor-1-3">Escaping the Shell</h1>
+
+<p>There are numerous ways to bypass the restrictions of this shell. A couple simple methods:</p>
+
+<ul>
+  <li>There is a menu under Setup-&gt;System-&gt;System Configuration that lets you install/configure Printers. It’s the standard Windows XP control panel option. With View-&gt;Explorer Bar-&gt;Folders, it becomes the standard folder view of explorer.exe.</li>
+  <li>Ctrl+alt+del seemed to actually function in the early boot stages. It didn’t launch the standard taskmgr.exe but it had an option to do so.</li>
+</ul>
+
+<p>I killed DVR.exe and found myself staring at…nothing.
+I tried starting explorer.exe but it only opened the folder view, it didn’t launch the full shell.
+I found the shell was set to some PC Pro executable, SN.exe, in the registry (<code class="highlighter-rouge">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell</code>).
+I modified the shell back to explorer.exe and launched it with taskmgr.
+This did what I wanted but the machine would always reboot about a minute after killing DVR.exe.
+I traced this to a watchdog started in ArgusV.dll via DVR.exe (Argus 5, apparently the name of the PCIe card that handles video/sensors/relays).
+A simple solution was to kill DVR.exe very early during launch, before it called ArgusV.dll:A5_StartWatchDog.</p>
+
+<p>DVR.exe also had an annoying habit of hiding the taskbar so I found myself using WinSpy++ to unhide Shell_TrayWnd occasionally.
+Poking around in the registry, I found <code class="highlighter-rouge">HKLM\Software\DSS\DVR\System\DesktopLock</code> which seemed interesting.
+However, I found that any modifications here were reset whenever DVR.exe was relaunched.
+The reason is that the system drive is a read-only ramdisk so DVR.exe was saving it’s settings elsewhere and then importing them into the registry at launch.
+I found the settings were stored in the Storage Path location <code class="highlighter-rouge">D:\DVRInfo\Registry.ini</code>.
+This is just a renamed .reg file.
+Setting <code class="highlighter-rouge">"DesktopLock"=dword:00000000</code> in this INI file lessened some of the restrictions.</p>
+
+<h1 id="tocAnchor-1-4">Booting Linux</h1>
+
+<p>Regardless, at this point I decided I wanted to try booting Linux.
+It PXE booted with no hassle.
+lsusb showed this interesting device:
+<code class="highlighter-rouge">Bus 001 Device 002: ID 04b4:0084 Cypress Semiconductor Corp. </code>
+Searching the internet yielded no information on this specific VID:PID.
+I physically disassembled the DVR and found the front panel has a PCB with a <a href="http://www.cypress.com/?mpn=CY7C68013A-128AXC">CY7C68013A-128AXC</a> EZ-USB FX2LP. This is what controls the 8x2 LCD, LEDs, buttons, and infrared sensor.
+This is an interesting device that provides a USB interface and an 8051 MCU.
+The datasheet (Technical Reference Manual) is available <a href="http://www.cypress.com/?rID=38232">here</a>.
+After reading up on it a few minutes, I found that it requires firmware which can either be loaded from an EEPROM or uploaded directly into RAM.
+There was no EEPROM on the PCB and the fact that this device showed up as “Cypress …” told me it was probably not programmed.
+Once the firmware is uploaded, a new device will show up.
+I wanted to know how to communicate with the stock firmware, so I decided to load up VirtualBox and capture the USB traffic while DVR.exe was launching .
+The advantage to doing it this way is that there is no hardware watchdog to get in the way.
+(There are a number of other ways to go about this!)</p>
+
+<h1 id="tocAnchor-1-5">Running in VirtualBox</h1>
+
+<p>I used dd to make a copy of the DiskOnModule drive and created a VDI disk from it:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># dd if=/dev/sdb of=sdb.dd
+# VBoxManage convertdd sdb.dd sdb.vdi --format VDI
+</code></pre>
+</div>
+
+<p>I then created a VM (Windows XP 32-bit, 1024MiB RAM) and launched it.
+I connected the front panel USB cables to my development machine’s motherboard.
+Once XP Embedded booted up, I was greeted with some error about a serial.
+This was the shell, SN.exe, likely checking the serial against some hardware signature and complaining.
+I decided to simply set the shell back to explorer.exe.
+I used <code class="highlighter-rouge">chntpw -e</code> on <code class="highlighter-rouge">\Windows\System32\config\SOFTWARE</code> (in the VDI) to edit the key <code class="highlighter-rouge">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell</code> and relaunched the VM.
+This results in a much more standard Windows XP experience.
+Now, I looked at the available USB devices in VirtualBox and found the familiar “Unknown device 04b4:0084”.
+Once connected, something interesting happened.
+I found the device disappeared and a new device appeared: <code class="highlighter-rouge">AverMedia SA7001</code>.
+What’s happening is the firmware is immediately being uploaded to the FX2LP which then “ReNumerates”.</p>
+
+<p>I loaded usbmon in my Linux host (<code class="highlighter-rouge">modprobe usbmon</code>) and launched Wireshark to capture the USB traffic.
+I launched DVR.exe in the VM and captured a good bit of traffic.
+To be clear, it is not actually DVR.exe that is generating all this traffic, it’s FPanel.exe. The PC Pro software is a collection of separate programs that work together via FindWindow/PostMessage.
+So, I found that FPanel.exe, upon launching, performs an endless number of USB control IN transfers.
+I guessed that it was probably polling the state of the device (which was a little disappointing as it seems a waste of resources).
+I captured the traffic as I pressed a button here and there and found that this control transfer was indeed affected by button presses.
+The first byte indicates an event:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>byte0</th>
+      <th>meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0xff</td>
+      <td>nothing new</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>button released</td>
+    </tr>
+    <tr>
+      <td>anything else</td>
+      <td>identifier of button currently pressed</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The last byte is a group of flags indicating the state of the FN key and a few other bits I don’t have time to investigate.</p>
+
+<p>I searched through the capture for messages I saw on the 8x2 LCD screen as well.
+A quick examination revealed there was a BULK endpoint which took a format like so:</p>
+
+<p>
+  <code class="highlighter-rouge">&lt;line&gt; &lt;char0&gt; ... &lt;char7&gt;</code>
+</p>
+
+<p>Where line was 0 for the first line of the LCD, 1 for the second. For example:</p>
+
+<p>
+  <code class="highlighter-rouge">0x00, Hello!!!</code>
+</p>
+
+<p>For the LEDs I had to step through DVR.exe until I saw one of the LEDs change state and then review the USB traffic.
+I won’t go into details here as the <a href="/2013/08/25/fpanelcpp/">source code</a> later on speaks for itself.
+Now I knew something of the protocol used to communicate.
+However, I wanted to be able to do this in Linux.
+That required loading the firmware blob in Linux.</p>
+
+<h1 id="tocAnchor-1-6">Extracting the firmware</h1>
+
+<p>Now, I could just try to extract the firmware from the usb traffic. However, there is an easier way.
+I downloaded the FX2LP Development Kit ISO from <a href="http://www.cypress.com/?rID=14321">here</a>.
+Reading the EZ-USB Development Kit User Guide revealed that the driver loading the firmware is CyLoad.sys (this can be verified in Device Manager). The INF file <code class="highlighter-rouge">/WINDOWS/INF/CyLoad.inf</code> indicated it loads <code class="highlighter-rouge">/WINDOWS/system32/CyLoad/CyLoad.spt</code>. The spt is a script file that contains .ihx (<a href="http://en.wikipedia.org/wiki/Intel_HEX">Intel Hex</a>) that is run on the 8051.
+I found a tool to extract the .ihx files from the .spt script: <a href="https://ftp.dlitz.net/pub/dlitz/cyusb-fw-extract/current/cyusb-fw-extract.py">cyusb-fw-extract</a>
+I extracted the files with:
+<code class="highlighter-rouge">python2 cyusb-fw-extract.py -v -oavermedia ~/CyLoad.spt</code>
+With 76 warnings, it did manage to extract avermedia_1.ihx and avermedia_2.ihx (I renamed these to .hex).</p>
+
+<p>Control Center is the program that generates the spt script files.
+The source is available with the DVK at <code class="highlighter-rouge">C:\Cypress\Cypress Suite USB 3.4.7\CyUSB.NET\examples\Control Center\Form1.cs</code> so I decided if the .ihx files generated did not work, I would start my investigation there.</p>
+
+<p>So, I wondered, how can I load this firmware in Linux?</p>
+
+<h1 id="tocAnchor-1-7">Loading the firmware in Linux</h1>
+
+<p>I found there are a few tools that are supposed to be able to load this firmware in Linux.
+However, only one wanted to work for me: <a href="http://www.triplespark.net/elec/periph/USB-FX2/software/">cycfx2prog</a></p>
+
+<p>After resetting the device (unplugging the USB cables so it shows up as 04b4:0084 again), I used the following sequence of commands:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># ./cycfx2prog -id=04b4.0084 prg:avermedia_1.hex
+# ./cycfx2prog -id=04b4.0084 run
+# ./cycfx2prog -id=04b4.0084 prg:avermedia_2.hex
+# ./cycfx2prog -id=04b4.0084 run
+</code></pre>
+</div>
+
+<p>Note: avermedia_1.hex is not actually necessary, it seems to be some kind of a stub.</p>
+
+<p>After this, the new device shows up on the USB bus:
+<code class="highlighter-rouge">Bus 001 Device 004: ID 07ca:a002 AVerMedia Technologies, Inc. </code></p>
+
+<h1 id="tocAnchor-1-8">Communicating with the firmware</h1>
+
+<p>Now that I had the firmware loaded in Linux, I wanted to communicate with it!
+The example, using libusbx, is <a href="/2013/08/25/fpanelcpp/">here.</a>
+It supports the buttons, LCD, and LEDs.
+I don’t have the remote control for the DVR so I can’t test the IR functionality.
+It may be that the IR input is in the 11-byte USB control IN transfer, I don’t know.</p>
+
+<h1 id="tocAnchor-1-9">Open-source firmware!</h1>
+
+<p>So far, this is what’s possible:</p>
+
+<ul>
+  <li>Load the proprietary firmware in Linux</li>
+  <li>Read button state</li>
+  <li>Write to the LCD</li>
+  <li>Control the LEDs</li>
+</ul>
+
+<p>However, this all requires custom software on the PC and raw USB I/O. Plus, it requires that proprietary firmware blob which isn’t really ideal.</p>
+
+<p>In the next article I will go over how I wrote open-source firmware to solve some of these issues.</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

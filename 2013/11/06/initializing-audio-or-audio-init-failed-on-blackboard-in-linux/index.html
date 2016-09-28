@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>&quot;Initializing audio&quot; or &quot;Audio init failed&quot; on Blackboard in Linux</title>
+  <meta name="description" content="Introduction">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2013/11/06/initializing-audio-or-audio-init-failed-on-blackboard-in-linux/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">&quot;Initializing audio&quot; or &quot;Audio init failed&quot; on Blackboard in Linux</h1>
+    <p class="post-meta"><time datetime="2013-11-06T11:20:21-05:00" itemprop="datePublished">Nov 6, 2013</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">The Issue</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-3">
+              <a href="#tocAnchor-1-3"><span class="tocnumber">3</span> <span class="toctext">The Javascript</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-4">
+              <a href="#tocAnchor-1-4"><span class="tocnumber">4</span> <span class="toctext">The HTML</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-5">
+              <a href="#tocAnchor-1-5"><span class="tocnumber">5</span> <span class="toctext">Debugging It</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-6">
+              <a href="#tocAnchor-1-6"><span class="tocnumber">6</span> <span class="toctext">Final Solution</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-7">
+                  <a href="#tocAnchor-1-6-1"><span class="tocnumber">6.1</span> <span class="toctext">Ubuntu 13.10 64-bit (Saucy Salamander)</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-8">
+                  <a href="#tocAnchor-1-6-2"><span class="tocnumber">6.2</span> <span class="toctext">Generic</span></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><h1 id="tocAnchor-1-1">Introduction</h1>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/17t.png" data-jslghtbx="/assets/images/17.png" data-jslghtbx-group="" />
+</p>
+
+<p>Have you been unfortunate enough to come upon a screen like this on Blackboard?</p>
+
+<p>This is part of Blackboard Collaborate Voice (formerly Wimba Voice).</p>
+
+<p>In this article I will walk through the steps I took to discover the issue and solve it.</p>
+
+<h1 id="tocAnchor-1-2">The Issue</h1>
+
+<p>You’re browsing a Blackboard course and you encounter this:</p>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/15t.png" data-jslghtbx="/assets/images/15.png" data-jslghtbx-group="" />
+</p>
+
+<p>And it just sits there.</p>
+
+<p>It’s a Java applet (you were probably prompted to run it) and it’s doing a whole lot of nothing.</p>
+
+<p>Let’s examine the setup wizard page as an example: <a href="http://demo2.wimba.com/demo/wizard/playback.jsp">http://demo2.wimba.com/demo/wizard/playback.jsp</a></p>
+
+<h1 id="tocAnchor-1-3">The Javascript</h1>
+
+<p>It uses a bit of Javascript (<a href="http://demo2.wimba.com/demo/ve/play.js">play.js</a>) to generate an appropriate applet/object. It’s either not very up-to-date or just attempts to support very old software. A few choice lines:</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nx">w_is_Windows95</span><span class="p">())</span> <span class="k">return</span> <span class="s2">"Windows 95"</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="c1">// These result in a bug in Netscape 4.</span>
+<span class="c1">// Why take the chance of bugs with other browsers?</span>
+<span class="p">...</span>
+<span class="c1">//////////// Linux, Solaris, etc. (probably Netscape) ////////////</span>
+</code></pre>
+</div>
+
+<p>Windows 95 and Netscape? Not in my house.</p>
+
+<h1 id="tocAnchor-1-4">The HTML</h1>
+
+<p>On Linux the Javascript will generate markup like this:</p>
+
+<div class="language-html highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;applet</span> <span class="na">codebase=</span><span class="s">"http://demo2.wimba.com:80"</span> <span class="na">code=</span><span class="s">"Player.class"</span> <span class="na">id=</span><span class="s">"player"</span> <span class="na">name=</span><span class="s">"player"</span> <span class="na">archive=</span><span class="s">"http://demo2.wimba.com:80/demo/code/hwclients.jar"</span> <span class="na">height=</span><span class="s">"48"</span> <span class="na">align=</span><span class="s">"bottom"</span> <span class="na">width=</span><span class="s">"240"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"filename"</span> <span class="na">value=</span><span class="s">"http://demo2.wimba.com/demo/wizard/audio.wav"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"loglevel"</span> <span class="na">value=</span><span class="s">"debug"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"alt"</span> <span class="na">value=</span><span class="s">"[ Java Applet should load here ]"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"autostart"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"name"</span> <span class="na">value=</span><span class="s">"player"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"id"</span> <span class="na">value=</span><span class="s">"player"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"archive"</span> <span class="na">value=</span><span class="s">"http://demo2.wimba.com:80/demo/code/hwclients.jar"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"code"</span> <span class="na">value=</span><span class="s">"Player.class"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"diagnostic"</span> <span class="na">value=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"server_url"</span> <span class="na">value=</span><span class="s">"http://demo2.wimba.com:80/demo/com"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"gui"</span> <span class="na">value=</span><span class="s">"http://demo2.wimba.com:80/demo/gui/player/player.zip"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"ErrorMessage"</span> <span class="na">value=</span><span class="s">"Message does not exist.\(You need to be online\to play this message)"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"align"</span> <span class="na">value=</span><span class="s">"baseline"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"codebase"</span> <span class="na">value=</span><span class="s">"http://demo2.wimba.com:80"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"context_path"</span> <span class="na">value=</span><span class="s">"/demo"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"font"</span> <span class="na">value=</span><span class="s">"Arial Unicode MS, Dialog"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"error"</span><span class="nt">&gt;</span>Java is not installed, or the version of Java is too old.
+Please, run the <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"javascript:startwizard()"</span><span class="nt">&gt;</span>Setup Wizard<span class="nt">&lt;/a&gt;</span> and  select to install Java when prompted.<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/applet&gt;</span>
+</code></pre>
+</div>
+
+<p>Now, in this case we can see one of the parameters is a .wav file. So we could just copy that link and access it directly.
+However, let’s assume this isn’t always the case (it isn’t).</p>
+
+<h1 id="tocAnchor-1-5">Debugging It</h1>
+
+<p>One thing we can do is examine output in the Java Console. You can bring up the Java Control Panel to enable the Java Console:</p>
+
+<p>
+  <code class="highlighter-rouge">$ $JAVA_HOME/jre/bin/ControlPanel</code>
+</p>
+
+<p>or, perhaps</p>
+
+<p>
+  <code class="highlighter-rouge">$ /usr/lib/jvm/java-7-oracle/bin/ControlPanel</code>
+</p>
+
+<p>In the Advanced tab, enable logging and select “Show console”. Save those settings and restart your browser and the Java Console will present itself to you when a Java applet is run.</p>
+
+<p>The output I received initially included the following line:</p>
+
+<p>
+  <code class="highlighter-rouge">[info] AUDIOPROXY_ERR /home/daniel/.horizonwimba/JSecureDoor/audioproxy_1.0.4/data/audioproxy: error while loading shared libraries: libjack-0.100.0.so.0: cannot open shared object file: No such file or directory</code>
+</p>
+
+<p>So, apparently the applet downloads and executes (ugh) this audioproxy program which tries to load a version of libjack that I don’t have. So, next I installed the (32-bit) jack library and created a symlink:</p>
+
+<p>
+  <code class="highlighter-rouge"># ln -s /usr/lib32/libjack.so.0 /usr/lib32/libjack-0.100.0.so.0</code>
+</p>
+
+<p>This allowed things to proceed a little farther:</p>
+
+<p>
+  <img src="/assets/images/16.png" alt="" />
+</p>
+
+<p>The next console output had this error:</p>
+
+<p>
+  <code class="highlighter-rouge">[info] AUDIOPROXY_ERR PortAudio error at Unable to open streams: Illegal error number</code>
+</p>
+
+<p>If you search for “Unable to open streams: Illegal error number”, you’ll learn that the issue is related to OSS.
+You can also simply examine the audioproxy executable a bit.
+The program is old (‘03) and is statically linked with a fairly old (~’08) version of PortAudio.
+OSS was the Linux sound system before ALSA came in at Linux 2.5.
+The solution is to load/install some sort of compatibility layer that supports OSS.
+For me, this was simple:</p>
+
+<p>
+  <code class="highlighter-rouge"># modprobe snd_pcm_oss</code>
+</p>
+
+<p>The kernel module snd_pcm_oss is part of the compatibility layer that allows OSS to work through ALSA.
+You may also try osspd which is a userland solution.</p>
+
+<h1 id="tocAnchor-1-6">Final Solution</h1>
+
+<h2 id="tocAnchor-1-6-1">Ubuntu 13.10 64-bit (Saucy Salamander)</h2>
+
+<p>On a fresh install, this is all that is needed:</p>
+
+<ol>
+  <li><code class="highlighter-rouge">sudo apt-get install libc6:i386 libasound2:i386 libjack-jackd2-0:i386 osspd icedtea-plugin</code></li>
+  <li><code class="highlighter-rouge">sudo ln -s /usr/lib/i386-linux-gnu/libjack.so.0 /usr/lib/i386-linux-gnu/libjack-0.100.0.so.0</code></li>
+</ol>
+
+<h2 id="tocAnchor-1-6-2">Generic</h2>
+
+<ol>
+  <li>Install the required 32-bit libraries: libc6 libasound2 libjack</li>
+  <li>Create a symlink to the 32-bit jack library:
+Example: <code class="highlighter-rouge">ln -s /usr/lib32/libjack.so.0 /usr/lib32/libjack-0.100.0.so.0</code></li>
+  <li>Load OSS compatibility:
+This varies by distribution.
+If you’re lucky, it will be as simple as: <code class="highlighter-rouge">modprobe snd_pcm_oss</code></li>
+</ol>
+
+<p>Ta da!</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

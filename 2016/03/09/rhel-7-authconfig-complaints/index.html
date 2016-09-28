@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RHEL 7 authconfig complaints</title>
+  <meta name="description" content="The authconfig suite on RHEL 7 is commonly used to configure network authentication and authorization. In my case, I wanted LDAP authorization and Kerberos a...">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2016/03/09/rhel-7-authconfig-complaints/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">RHEL 7 authconfig complaints</h1>
+    <p class="post-meta"><time datetime="2016-03-09T11:40:55-05:00" itemprop="datePublished">Mar 9, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>The authconfig suite on RHEL 7 is commonly used to configure network authentication and authorization. In my case, I wanted LDAP authorization and Kerberos authentication.</p>
+
+<p>(I should actually note that this was on CentOS 7.2, rather than RHEL 7.0, but there should not be any difference.)</p>
+
+<p>There are 3 frontend interfaces to the authconfig suite:</p>
+
+<ul>
+  <li>authconfig - command-line, scriptable interface</li>
+  <li>authconfig-tui - (deprecated) command-line menu-driven interface</li>
+  <li>authconfig-gtk - full graphical interface (aka system-config-authentication)</li>
+</ul>
+
+<p>These frontends all utilize the same backend python code.</p>
+
+<p>Here are my complaints:</p>
+
+<ol>
+  <li>The manpage for authconfig is pretty sparse. In fact, it’s much more useful to run <code class="highlighter-rouge">authconfig --help</code> than it is <code class="highlighter-rouge">man authconfig</code>. This is the opposite of what it should be.</li>
+  <li>nslcd vs sssd. If you happen to have the sssd package installed at the time you run the authconfig utilities, sssd may be used. Otherwise, nslcd will be used. It will also depend on <code class="highlighter-rouge">--enablekrb5realmdns</code> / <code class="highlighter-rouge">--disablekrb5realmdns</code>. This is completely transparent to the user, no notification whatsoever.</li>
+  <li>authconfig-tui is deprecated, but still recommended by some experts. Perhaps due to the fact that the deprecation is mentioned half way through the manpage in a small notes section.</li>
+  <li>All 3 interfaces have different feature sets. The plain authconfig interface exposes the most features. This may not be a huge issue, but I think the situation could be improved.</li>
+</ol>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

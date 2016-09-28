@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>JuJu 2 with MAAS on Ubuntu Xenial 16.04</title>
+  <meta name="description" content="Introduction">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2016/09/20/juju-2-with-maas-on-ubuntu-xenial-16.04/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">JuJu 2 with MAAS on Ubuntu Xenial 16.04</h1>
+    <p class="post-meta"><time datetime="2016-09-20T02:04:56-04:00" itemprop="datePublished">Sep 20, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">MAAS</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-3">
+                  <a href="#tocAnchor-1-2-1"><span class="tocnumber">2.1</span> <span class="toctext">Set Up the Host</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-4">
+                  <a href="#tocAnchor-1-2-2"><span class="tocnumber">2.2</span> <span class="toctext">Set Up the VM Environment</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-5">
+                  <a href="#tocAnchor-1-2-3"><span class="tocnumber">2.3</span> <span class="toctext">Install the MAAS Region &amp; Rack Controller</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-6">
+                  <a href="#tocAnchor-1-2-4"><span class="tocnumber">2.4</span> <span class="toctext">Set Up DHCP</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-7">
+                  <a href="#tocAnchor-1-2-5"><span class="tocnumber">2.5</span> <span class="toctext">Setup libvirt Access on MAAS Controller</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-8">
+                  <a href="#tocAnchor-1-2-6"><span class="tocnumber">2.6</span> <span class="toctext">Set Up MAAS Nodes</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-9">
+              <a href="#tocAnchor-1-9"><span class="tocnumber">3</span> <span class="toctext">JuJu</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-10">
+                  <a href="#tocAnchor-1-9-1"><span class="tocnumber">3.1</span> <span class="toctext">Install Packages</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-11">
+                  <a href="#tocAnchor-1-9-2"><span class="tocnumber">3.2</span> <span class="toctext">JuJu+MAAS</span></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><h1 id="tocAnchor-1-1">Introduction</h1>
+
+<p>This is a quick guide to using JuJu on top of MAAS on Ubuntu Xenial.
+We will use a single physical host with a few KVM virtual machines that will serve as MAAS nodes.</p>
+
+<h1 id="tocAnchor-1-2">MAAS</h1>
+
+<p>First we’ll get MAAS setup and working with a few virtual machines.</p>
+
+<h2 id="tocAnchor-1-2-1">Set Up the Host</h2>
+
+<ol>
+  <li>Install Ubuntu 16.04 (I used Desktop)</li>
+  <li>Install Packages: <code class="highlighter-rouge">sudo apt install -y qemu-system virt-manager openssh-server</code></li>
+  <li>Start services; <code class="highlighter-rouge">sudo systemctl enable libvirt-bin &amp;&amp; sudo systemctl start libvirt-bin</code></li>
+  <li>Adjust permissions <code class="highlighter-rouge">sudo usermod -a -G libvirtd &lt;YOUR_USERNAME&gt;</code></li>
+  <li>Log out and log back in so the permissions take effect. (or use newgrp, or sudo as needed)</li>
+  <li>Ensure the Ubuntu Server ISO is available at /var/lib/libvirt/images/.</li>
+</ol>
+
+<p>We need qemu-system and virt-manager to set up the virtual machines. We will use openssh-server to allow SSH access from the maas-master VM for controlling some of the VMs.</p>
+
+<h2 id="tocAnchor-1-2-2">Set Up the VM Environment</h2>
+
+<ol>
+  <li>Run virt-manager.</li>
+  <li>Right-click on the QEMU/KVM line and select “Details”.</li>
+  <li>
+    <p>On the Virtual Networks tab, click the button to create a new virtual network as shown here:</p>
+
+    <p><img class="jslghtbx-thmb" src="/assets/images/27t.png" data-jslghtbx="/assets/images/27.png" data-jslghtbx-group="maas_create_network" />
+    <img class="jslghtbx-thmb" src="/assets/images/28t.png" data-jslghtbx="/assets/images/28.png" data-jslghtbx-group="maas_create_network" />
+    <img class="jslghtbx-thmb" src="/assets/images/29t.png" data-jslghtbx="/assets/images/29.png" data-jslghtbx-group="maas_create_network" />
+    <img class="jslghtbx-thmb" src="/assets/images/30t.png" data-jslghtbx="/assets/images/30.png" data-jslghtbx-group="maas_create_network" /></p>
+  </li>
+</ol>
+
+<h2 id="tocAnchor-1-2-3">Install the MAAS Region &amp; Rack Controller</h2>
+
+<ol>
+  <li>
+    <p>Create a new VM to install the MAAS Region Controller.</p>
+
+    <p><img class="jslghtbx-thmb" src="/assets/images/31t.png" data-jslghtbx="/assets/images/31.png" data-jslghtbx-group="maas_create_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/32t.png" data-jslghtbx="/assets/images/32.png" data-jslghtbx-group="maas_create_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/33t.png" data-jslghtbx="/assets/images/33.png" data-jslghtbx-group="maas_create_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/34t.png" data-jslghtbx="/assets/images/34.png" data-jslghtbx-group="maas_create_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/35t.png" data-jslghtbx="/assets/images/35.png" data-jslghtbx-group="maas_create_region_controller" /></p>
+  </li>
+  <li>
+    <p>Install the MAAS Region Controller. Most steps are omitted here as the defaults are acceptable or common sense.</p>
+
+    <p><img class="jslghtbx-thmb" src="/assets/images/36t.png" data-jslghtbx="/assets/images/36.png" data-jslghtbx-group="maas_install_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/37t.png" data-jslghtbx="/assets/images/37.png" data-jslghtbx-group="maas_install_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/38t.png" data-jslghtbx="/assets/images/38.png" data-jslghtbx-group="maas_install_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/39t.png" data-jslghtbx="/assets/images/39.png" data-jslghtbx-group="maas_install_region_controller" />
+    <img class="jslghtbx-thmb" src="/assets/images/40t.png" data-jslghtbx="/assets/images/40.png" data-jslghtbx-group="maas_install_region_controller" /></p>
+  </li>
+</ol>
+
+<p>With the installation complete, you can verify that the basics are working by doing the following:</p>
+
+<ul>
+  <li>SSH to the machine (192.168.100.2) using the credentials you created during install.</li>
+  <li>Access the web interface at http://192.168.100.2:5240/ using the other set of credentials you created during install.</li>
+</ul>
+
+<p>Verify this all works before continuing.</p>
+
+<p>Optionally, you may want to enable auto-starting for this VM:
+<code class="highlighter-rouge">virsh autostart maas-master</code></p>
+
+<h2 id="tocAnchor-1-2-4">Set Up DHCP</h2>
+
+<p>Now we want the MAAS controller to run DHCP on the VM network we created.</p>
+
+<ol>
+  <li>Log in to the web interface at http://192.168.100.2:5240/.</li>
+  <li>Navigate to the Networks tab at the top.</li>
+  <li>Click on the ‘untagged’ link under the VLAN column.</li>
+  <li>Click the dropdown item at the top that says ‘Take Action’, and select ‘Provide DHCP’.</li>
+  <li>You can accept the defaults and just continue with the “Provide DHCP” button.</li>
+</ol>
+
+<p>For verification, you can SSH to maas-master (192.168.100.2) and confirm that dhcpd is running (pgrep dhcpd should return a number).</p>
+
+<h2 id="tocAnchor-1-2-5">Setup libvirt Access on MAAS Controller</h2>
+
+<p>We want the MAAS controller/master to be able to start and stop VMs on the host. To accomplish this, we will need to install a package and setup public key auth from the MAAS Region Controller to the VM host it runs on.</p>
+
+<ol>
+  <li>SSH to maas-master (192.168.100.2).</li>
+  <li>Install required libvirt client software: <code class="highlighter-rouge">sudo apt install libvirt-bin</code></li>
+  <li>Become the ‘maas’ user: <code class="highlighter-rouge">sudo su -ls /bin/bash maas</code></li>
+  <li>Create a key pair: <code class="highlighter-rouge">ssh-keygen -f /var/lib/maas/.ssh/id_rsa -qN ''</code></li>
+  <li>Copy the public key to the host system: <code class="highlighter-rouge">ssh-copy-id &lt;USERNAME_ON_HOST&gt;==</code>192.168.100.1@
+# Verify that things are working: @virsh -c qemu+ssh://&lt;USERNAME_ON_HOST&gt;<code class="highlighter-rouge">==192.168.100.1/system list</code></li>
+</ol>
+
+<h2 id="tocAnchor-1-2-6">Set Up MAAS Nodes</h2>
+
+<p>Now we want to set up 4 VMs that will take on the role of MAAS nodes. Let’s look at setting up the first one.</p>
+
+<p>Note here that we’re selecting the option to customize the VM before installation. Then we are adding a second disk, and a second network interface before continuing with the installation (which is just network booting in this case).</p>
+
+<p><img class="jslghtbx-thmb" src="/assets/images/41t.png" data-jslghtbx="/assets/images/41.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/42t.png" data-jslghtbx="/assets/images/42.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/43t.png" data-jslghtbx="/assets/images/43.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/44t.png" data-jslghtbx="/assets/images/44.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/45t.png" data-jslghtbx="/assets/images/45.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/46t.png" data-jslghtbx="/assets/images/46.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/47t.png" data-jslghtbx="/assets/images/47.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/48t.png" data-jslghtbx="/assets/images/48.png" data-jslghtbx-group="maas_create_node_vm" />
+        <img class="jslghtbx-thmb" src="/assets/images/49t.png" data-jslghtbx="/assets/images/49.png" data-jslghtbx-group="maas_create_node_vm" /></p>
+
+<p>If everything goes as planned the machine should power on and network boot as shown in the last step above.
+It will boot up and run some cloud-init routines and then reboot.</p>
+
+<p>After rebooting it will probably be stuck complaining about no boot devices being found. This is because the boot options are ‘helpfully’ changed after the reboot. (To be fair, normally this is what you want!)</p>
+
+<p>To fix things back up, force the VM off and modify the boot options:</p>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/50t.png" data-jslghtbx="/assets/images/50.png" data-jslghtbx-group="maas_modify_boot_options" />
+</p>
+
+<p>Now let’s check back in to the web interface of the region/rack controller. You’ll find a new node under the Nodes section. It will have a random name, which you may want to change as I did here:
+<img class="jslghtbx-thmb" src="/assets/images/51t.png" data-jslghtbx="/assets/images/51.png" data-jslghtbx-group="maas_node_add" />
+        <img class="jslghtbx-thmb" src="/assets/images/52t.png" data-jslghtbx="/assets/images/52.png" data-jslghtbx-group="maas_node_add" /></p>
+
+<p>On this same page, we will want to scroll down and set up the power control for this node:
+<img class="jslghtbx-thmb" src="/assets/images/53t.png" data-jslghtbx="/assets/images/53.png" data-jslghtbx-group="maas_node_power" /></p>
+
+<p>The “Power address” I used here was <code class="highlighter-rouge">qemu+ssh://&lt;USERNAME_ON_HOST&gt;==</code>==192.168.100.1/system list@.</p>
+
+<p>Finally, we will want to ‘commission’ the node. This will power the VM up, network boot it, and gather information about the node (CPU core count, RAM, etc). It will then power down the node.</p>
+
+<p><img class="jslghtbx-thmb" src="/assets/images/54t.png" data-jslghtbx="/assets/images/54.png" data-jslghtbx-group="maas_commission_nodes" />
+        <img class="jslghtbx-thmb" src="/assets/images/55t.png" data-jslghtbx="/assets/images/55.png" data-jslghtbx-group="maas_commission_nodes" />
+        <img class="jslghtbx-thmb" src="/assets/images/56t.png" data-jslghtbx="/assets/images/56.png" data-jslghtbx-group="maas_commission_nodes" /></p>
+
+<p>Check the web interface for the node and you should see the CPU core count, RAM, storage, and other values all filled in.</p>
+
+<p>Now repeat this section until you have 4 nodes ready to as shown in the previous image. Alternatively you can automate most of this with something like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>virsh dumpxml maas-node1 &gt; node.xml
+id=$(virsh domuuid maas-node1)
+for node in 2 3 4 5; do
+    sed "s/maas-node1/maas-node$node/g" node.xml &gt; node$node.xml
+    sed -i "s/$id/$(uuidgen)/g" node$node.xml
+    qemu-img create -f qcow2 /var/lib/libvirt/images/maas-node$node-1.qcow2 15G
+    qemu-img create -f qcow2 /var/lib/libvirt/images/maas-node$node-2.qcow2 15G
+    virsh define node$node.xml
+done
+</code></pre>
+</div>
+
+<p>You’ll still need to virsh edit maas-node{2,3,4,5} and ensure MAC addresses are unique.</p>
+
+<h1 id="tocAnchor-1-9">JuJu</h1>
+
+<p>Now we’ll get JuJu 2 set up on the host machine and deployed into MAAS.</p>
+
+<h2 id="tocAnchor-1-9-1">Install Packages</h2>
+
+<p>We only need a single package here:</p>
+
+<p>
+  <code class="highlighter-rouge">sudo apt install -y juju-2.0</code>
+</p>
+
+<h2 id="tocAnchor-1-9-2">JuJu+MAAS</h2>
+
+<p>We’ll need to create a file to describe our MAAS cloud:</p>
+
+<p>
+  <code class="highlighter-rouge">maascloud.yaml</code>
+</p>
+
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">clouds</span><span class="pi">:</span>
+  <span class="s">maascloud</span><span class="pi">:</span>
+    <span class="s">type</span><span class="pi">:</span> <span class="s">maas</span>
+    <span class="s">auth-types</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">oauth1</span><span class="pi">]</span>
+    <span class="s">endpoint</span><span class="pi">:</span> <span class="s1">'</span><span class="s">http://192.168.100.2:5240/MAAS'</span>
+</code></pre>
+</div>
+
+<p>Now we can inform JuJu about this cloud: <code class="highlighter-rouge">juju add-cloud maascloud ~/maascloud.yaml</code></p>
+
+<p>You can verify that it has been added with: <code class="highlighter-rouge">juju list-clouds</code> (look for local:maascloud)</p>
+
+<p>Now we’ll need to add credentials for MAAS.</p>
+
+<ol>
+  <li>Navigate to http://192.168.100.2:5240/MAAS/account/prefs/ and grab the API key from the top of the page.</li>
+  <li>Run <code class="highlighter-rouge">juju add-credential maascloud</code>.</li>
+  <li>Enter some name for the credential.</li>
+  <li>Paste the API key from step 1.</li>
+</ol>
+
+<p>You can run <code class="highlighter-rouge">juju list-credentials</code> to verify the credentials were added.</p>
+
+<p>Finally we are ready to bootstrap JuJu in our MAAS cloud.
+<code class="highlighter-rouge">juju bootstrap maascloud-controller maascloud</code></p>
+
+<p>At this point JuJu should be up and running! You can now deploy applications and bundles on to the VMs (also in LXD containers on the VMs).</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

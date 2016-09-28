@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Speco PC Pro Front Panel HID Firmware</title>
+  <meta name="description" content="Introduction">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2013/08/19/speco-pc-pro-front-panel-hid-firmware/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Speco PC Pro Front Panel HID Firmware</h1>
+    <p class="post-meta"><time datetime="2013-08-19T13:16:38-04:00" itemprop="datePublished">Aug 19, 2013</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">fx2lib</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-3">
+              <a href="#tocAnchor-1-3"><span class="tocnumber">3</span> <span class="toctext">Ports</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-4">
+              <a href="#tocAnchor-1-4"><span class="tocnumber">4</span> <span class="toctext">Human Interface Device</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-5">
+              <a href="#tocAnchor-1-5"><span class="tocnumber">5</span> <span class="toctext">Buttons</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-6">
+              <a href="#tocAnchor-1-6"><span class="tocnumber">6</span> <span class="toctext">Wheels</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-7">
+              <a href="#tocAnchor-1-7"><span class="tocnumber">7</span> <span class="toctext">Infrared</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-8">
+              <a href="#tocAnchor-1-8"><span class="tocnumber">8</span> <span class="toctext">LEDs</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-9">
+              <a href="#tocAnchor-1-9"><span class="tocnumber">9</span> <span class="toctext">LCD</span></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><h1 id="tocAnchor-1-1">Introduction</h1>
+
+<p>This article goes over the firmware I wrote for the front panel of my Speco PC Pro DVR which has a <a href="http://www.cypress.com/?mpn=CY7C68013A-128AXC">CY7C68013A-128AXC EZ-USB FX2LP</a>.
+It emulates a keyboard.
+The repository is on github: <a href="https://github.com/dewyatt/fpanelkb">https://github.com/dewyatt/fpanelkb</a>
+This firmware is HID-compliant so it “just works”, for the most part, no need to write a PC driver.</p>
+
+<h1 id="tocAnchor-1-2">fx2lib</h1>
+
+<p>The EZ-USB FX2LP Development Kit software is for Windows and comes with the Keil compiler and a supporting library for FX2LP development.
+The Keil compiler is great but it is commercial software and limited to a certain output size unless you purchase a license.</p>
+
+<p>For Linux, we have the <a href="http://sdcc.sourceforge.net/">Small Device C Compiler</a> compiler.
+However, we cannot use the EZ-USB development library that comes with the DVK.
+This is where <a href="https://github.com/mulicheng/fx2lib">fx2lib</a> comes in.</p>
+
+<h1 id="tocAnchor-1-3">Ports</h1>
+
+<p>I discovered most of the port connections by using a multimeter. For some of them, I used a simple continuity test. For others, I uploaded firmware that would toggle ports on and off and tested the voltage on wires here and there. Lastly, for a few I had to resort to disassembling the stock firmware for a hint.
+The results:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>port(s)</th>
+      <th>function</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PA0</td>
+      <td>Infrared receiver</td>
+    </tr>
+    <tr>
+      <td>PA1-PA4</td>
+      <td>Not sure, reported as flags in keys report of stock firmware (last byte), alongside FN key</td>
+    </tr>
+    <tr>
+      <td>PA5</td>
+      <td>LCD, E</td>
+    </tr>
+    <tr>
+      <td>PA6</td>
+      <td>LCD, RS</td>
+    </tr>
+    <tr>
+      <td>PA7</td>
+      <td>LCD, RW</td>
+    </tr>
+    <tr>
+      <td>PB0-PB1</td>
+      <td>Dial</td>
+    </tr>
+    <tr>
+      <td>PB2-PB5</td>
+      <td>Shuttle wheel</td>
+    </tr>
+    <tr>
+      <td>PB6-PB7</td>
+      <td>No clue, though they are read by the stock firmware</td>
+    </tr>
+    <tr>
+      <td>PC0-PC7</td>
+      <td>LCD, DATA</td>
+    </tr>
+    <tr>
+      <td>PD0-PD4</td>
+      <td>Button matrix</td>
+    </tr>
+    <tr>
+      <td>PD5</td>
+      <td>Recording LED</td>
+    </tr>
+    <tr>
+      <td>PD6</td>
+      <td>Network LED</td>
+    </tr>
+    <tr>
+      <td>PD7</td>
+      <td>FN button LED</td>
+    </tr>
+    <tr>
+      <td>PE0-PE7</td>
+      <td>Button matrix</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="tocAnchor-1-4">Human Interface Device</h1>
+
+<p><a href="http://en.wikipedia.org/wiki/USB_human_interface_device_class">USB Human Interface Devices (HID)</a> are a class of USB devices well-suited for things like keyboards and mice.
+What’s nice about an HID device is that it generally does not require writing a driver on the PC side.</p>
+
+<p>HID devices use descriptors to describe reports.
+They’re a bit confusing at first.
+The descriptor fpanelkb uses is located at <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/src/dscr.a51">src/dscr.a51</a>.
+Here is an excerpt:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>                                      ;;;lcd (first byte = line(0/1), 8 bytes are character data)
+  .db 0x06, 0x00, 0xff              ;   USAGE_PAGE (Vendor Defined Page 1)
+  .db 0x09, 0x01                    ;   USAGE (Vendor Usage 1)
+  .db 0x85, 0x03                    ;   REPORT_ID (3)
+  .db 0x75, 0x08                    ;   REPORT_SIZE (8)
+  .db 0x95, 0x09                    ;   REPORT_COUNT (9)
+  .db 0x92, 0x00, 0x01              ;   OUTPUT (Data,Ary,Abs,Buf)
+</code></pre>
+</div>
+
+<p>This particular report is for writing to the LCD. It has a report ID so we can differentiate between the other 3 reports. It consists of 9 bytes (REPORT_SIZE * REPORT_COUNT = 72 bits).</p>
+
+<h1 id="tocAnchor-1-5">Buttons</h1>
+
+<p>There are 39 pushbuttons. They are arranged in a matrix and 7 buttons can be pressed at a time.
+The code is a bit confusing if you’re not accustomed to dealing with button matrices.
+Resources on button matrices:</p>
+
+<ul>
+  <li><a href="http://pcbheaven.com/wikipages/How_Key_Matrices_Works/">How a Key Matrix Work</a></li>
+  <li><a href="http://www.openmusiclabs.com/learning/digital/input-matrix-scanning/">Input Matrix Scanning</a></li>
+</ul>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="n">WORD</span> <span class="nf">make_keycode</span> <span class="p">(</span> <span class="n">WORD</span> <span class="n">e</span><span class="p">,</span> <span class="n">WORD</span> <span class="n">r</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="p">(</span> <span class="n">e</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="mh">0x7C</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">case</span> <span class="mh">0xBC</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="k">case</span> <span class="mh">0xDC</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="k">case</span> <span class="mh">0xEC</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="k">case</span> <span class="mh">0xF4</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="k">case</span> <span class="mh">0xF8</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//Fills buttons[7] array with any pressed keys
+</span><span class="kt">void</span> <span class="nf">scan_buttons</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//overly complex version:
+</span>    <span class="c1">//IOD = ( IOD &amp; 0xE0 ) | (0x1F &amp; (~(1 &lt;&lt; i)));
+</span>    <span class="n">IOD</span> <span class="o">|=</span> <span class="mh">0x1F</span><span class="p">;</span> <span class="c1">//Turn on all bits except top 3 (LED outputs)
+</span>    <span class="n">IOD</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">i</span><span class="p">);</span> <span class="c1">//Turn off column i
+</span>    <span class="n">IOE</span> <span class="o">=</span> <span class="mh">0xFF</span><span class="p">;</span>
+    <span class="n">buttons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_keycode</span> <span class="p">(</span> <span class="n">IOE</span> <span class="o">&amp;</span> <span class="mh">0xFC</span><span class="p">,</span> <span class="n">i</span> <span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">IOD</span> <span class="o">|=</span> <span class="mh">0x1F</span><span class="p">;</span>
+  <span class="n">IOE</span> <span class="o">=</span> <span class="mh">0xFE</span><span class="p">;</span>
+  <span class="n">buttons</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_keycode</span> <span class="p">(</span> <span class="n">IOE</span> <span class="o">&amp;</span> <span class="mh">0xFC</span><span class="p">,</span> <span class="mi">5</span> <span class="p">);</span>
+  <span class="n">IOD</span> <span class="o">|=</span> <span class="mh">0x1F</span><span class="p">;</span>
+  <span class="n">IOE</span> <span class="o">=</span> <span class="mh">0xFD</span><span class="p">;</span>
+  <span class="n">buttons</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_keycode</span> <span class="p">(</span> <span class="n">IOE</span> <span class="o">&amp;</span> <span class="mh">0xFC</span><span class="p">,</span> <span class="mi">6</span> <span class="p">);</span>
+  <span class="n">IOE</span> <span class="o">=</span> <span class="mh">0xFF</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">scan_buttons</code> is called every 5 milliseconds using a timer. This takes care of <a href="http://www.labbookpages.co.uk/electronics/debounce.html">debouncing</a>. It fills the <code class="highlighter-rouge">buttons[7]</code> array with any pressed buttons (0 if nothing pressed).</p>
+
+<p>When a button is pressed on the front panel, it is mapped to a keyboard key using <code class="highlighter-rouge">button_keymap[]</code> which uses constants defined in <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/include/hidkeys.h">include/hidkeys.h</a>.</p>
+
+<h1 id="tocAnchor-1-6">Wheels</h1>
+
+<p>There are two “wheels”. One is the shuttle wheel, the spring-loaded wheel that returns to a neutral position when you release it. This is typically used for fast-forwarding and rewinding at different speeds. It is mapped to keyboard keys via <code class="highlighter-rouge">shuttle_keymap[]</code>.</p>
+
+<p>The other wheel is more of a dial. It has an indentation to rest your finger and spin it. It is typically used for frame-by-frame seeking. It is mapped to keyboard keys via <code class="highlighter-rouge">dial_keymap[]</code>.</p>
+
+<h1 id="tocAnchor-1-7">Infrared</h1>
+
+<p>The infrared receiver is connected to PA0.
+When infrared light is present, PA0 is driven LOW, otherwise it remains HIGH.
+The code is somewhat interesting. This is how it’s used in <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/src/device.c">src/device.c</a> :</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="c1">//init
+</span>  <span class="n">ir_init</span><span class="p">();</span>
+  <span class="n">ir_start</span><span class="p">();</span>
+<span class="p">...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">button_pressed</span> <span class="o">&amp;&amp;</span> <span class="n">got_ir</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="c1">//infrared
+</span>      <span class="k">if</span> <span class="p">(</span> <span class="n">decode_ir</span> <span class="p">(</span> <span class="o">&amp;</span><span class="n">mode</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">toggle</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">address</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">command</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">remote_key_map</span> <span class="p">(</span> <span class="n">command</span> <span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">button</span> <span class="p">)</span> <span class="p">{</span>
+          <span class="n">send_key_report</span> <span class="p">(</span> <span class="n">button</span> <span class="p">);</span>
+          <span class="k">while</span> <span class="p">(</span> <span class="n">EP1INCS</span> <span class="o">&amp;</span> <span class="n">bmEPBUSY</span> <span class="p">)</span> <span class="p">{}</span>
+          <span class="n">send_key_report</span> <span class="p">(</span> <span class="mi">0</span> <span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="n">ir_start</span> <span class="p">();</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">ir_init()</code> sets up a timer and external interrupt but does not enable them. <code class="highlighter-rouge">ir_start()</code> enables external interrupt 0 (falling edge) which is conveniently on the IR port (PA0). When the interrupt triggers, we end up in <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/src/ir.c">ir.c</a> <code class="highlighter-rouge">ir_ie0_isr()</code>.
+This function enables a timer for RC6_UNIT/4 microseconds. See <a href="http://www.sbprojects.com/knowledge/ir/rc6.php">this</a> page for info on RC-6 Mode 0. This lets us jump part way into the IR stream. When the timer triggers, we’ll land in <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/src/ir.c">ir.c</a> <code class="highlighter-rouge">ir_timer_isr()</code>.
+This function records 58 samples at 444 microsecond intervals. It’s important that this function simply record the data and not interpret it as we’re dealing with some tight timing on a 48MHz CPU.
+Once all 58 samples have been recorded, <code class="highlighter-rouge">got_ir</code> is set to TRUE. At this point, <code class="highlighter-rouge">decode_ir</code> can be called to see if it is a valid RC-6 Mode 0 data stream.</p>
+
+<p>The remote commands are then mapped to keyboard keys with <code class="highlighter-rouge">remote_key_map()</code>.</p>
+
+<h1 id="tocAnchor-1-8">LEDs</h1>
+
+<p>There are 3 LEDs total. The recording LED, network LED, and the FN button LED (LED under the FN button).
+They use up ports PD5, PD6, and PD7, respectively.</p>
+
+<p>The FN LED is used as the CAPS LOCK key and is a separate HID report. The firmware handles it as follows:</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="p">(</span><span class="n">EP1OUTCS</span> <span class="o">&amp;</span> <span class="n">bmEPBUSY</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//report id
+</span>    <span class="k">switch</span> <span class="p">(</span> <span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="c1">//keyboard LEDs
+</span>      <span class="k">case</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">PD7</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="c1">//caps lock (FN button) LED
+</span>        <span class="k">if</span> <span class="p">(</span> <span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">2</span> <span class="p">)</span>
+          <span class="n">PD7</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+      <span class="k">break</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p>The other LEDs are handled a bit farther down:</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code>      <span class="c1">//recording &amp; network LEDs
+</span>      <span class="k">case</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">PD5</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="n">PD6</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p>These require a little bit of software on the client side to control.
+There are a couple of libraries available for raw HID I/O:</p>
+
+<ul>
+  <li><a href="http://bfoz.github.io/libhid/">libhid</a></li>
+  <li><a href="http://www.signal11.us/oss/hidapi/">hidapi</a></li>
+</ul>
+
+<p>I used hidapi. Here is an excerpt from <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/tests/leds.c">tests/leds.c</a> :</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">leds_write</span> <span class="p">(</span> <span class="n">hid_device</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">recording</span><span class="p">,</span> <span class="kt">int</span> <span class="n">network</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  <span class="c1">//byte 0 is the Report ID (4)
+</span>  <span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x4</span><span class="p">;</span>
+  <span class="c1">//byte 1 is the state of the LEDs
+</span>  <span class="n">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span> <span class="n">recording</span> <span class="p">)</span>
+    <span class="n">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span> <span class="n">network</span> <span class="p">)</span>
+   <span class="n">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="mi">2</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span> <span class="n">hid_write</span> <span class="p">(</span> <span class="n">handle</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">2</span> <span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span>
+    <span class="n">fprintf</span> <span class="p">(</span> <span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: hid_write failed</span><span class="se">\n</span><span class="s">"</span> <span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h1 id="tocAnchor-1-9">LCD</h1>
+
+<p>The LCD is <a href="http://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller">HD44780</a> compatible.
+There are a ton of libraries to handle these display controllers.
+I wrote my little library in <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/src/lcd.c">src/lcd.c</a>.
+The code that handles LCD reports in the firmware is simple:</p>
+
+<figure class="highlight">
+  <pre>
+    <code class="language-c" data-lang="c">      <span class="c1">//LCD
+</span>      <span class="k">case</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">lcd_goto</span> <span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+        <span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">lcd_write_string</span> <span class="p">(</span> <span class="o">&amp;</span><span class="n">EP1OUTBUF</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span></code>
+  </pre>
+</figure>
+
+<p>Similarly to the LEDs, the LCD requires client-side software.
+Here is an excerpt from <a href="https://github.com/dewyatt/fpanelkb/blob/5e3d610/tests/lcd.c">tests/lcd.c</a> :</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">lcd_write</span> <span class="p">(</span> <span class="n">hid_device</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">line</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">strlen</span> <span class="p">(</span> <span class="n">s</span> <span class="p">);</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="c1">//byte 0 is the Report ID (3)
+</span>  <span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x3</span><span class="p">;</span>
+  <span class="c1">//byte 1 is the LCD line (0 or 1)
+</span>  <span class="n">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">;</span>
+
+  <span class="c1">//copy the string to &amp;buffer[2]
+</span>  <span class="n">strncpy</span> <span class="p">(</span> <span class="n">buffer</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="mi">8</span> <span class="p">);</span>
+
+  <span class="c1">//fill out the rest of the string with spaces if necessary
+</span>  <span class="k">for</span> <span class="p">(</span> <span class="n">i</span> <span class="o">=</span> <span class="n">length</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span>
+    <span class="n">buffer</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sc">' '</span><span class="p">;</span>
+
+  <span class="c1">//send it off
+</span>  <span class="k">if</span> <span class="p">(</span> <span class="n">hid_write</span> <span class="p">(</span> <span class="n">handle</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">buffer</span><span class="p">,</span> <span class="mi">10</span> <span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span>
+    <span class="n">fprintf</span> <span class="p">(</span> <span class="n">stderr</span><span class="p">,</span> <span class="s">"Warning: hid_write failed</span><span class="se">\n</span><span class="s">"</span> <span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

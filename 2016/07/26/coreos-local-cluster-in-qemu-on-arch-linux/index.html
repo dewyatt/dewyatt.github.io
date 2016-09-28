@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>CoreOS local cluster in QEMU on Arch Linux</title>
+  <meta name="description" content="Introduction">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2016/07/26/coreos-local-cluster-in-qemu-on-arch-linux/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">CoreOS local cluster in QEMU on Arch Linux</h1>
+    <p class="post-meta"><time datetime="2016-07-26T12:55:52-04:00" itemprop="datePublished">Jul 26, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="introduction">Introduction</h2>
+
+<p>CoreOS is a lightweight Linux-based OS for clustered deployments of containers. It can stand on its own but also works well with higher-level tools like Kubernetes.</p>
+
+<p>Here I will walk through a process for running a small cluster of CoreOS VMs that will be booted over the network from another Arch Linux system. This should mostly be suitable for testing/dev.</p>
+
+<p>The server named archpxe will provide TFTP. The server named archvmhost will provide HTTP (via nginx) and run the virtual machines. You could probably combine these roles on to a single server but that is not covered here.</p>
+
+<p>I have tested this with QEMU version 2.6.0.</p>
+
+<h2 id="set-up-the-network-boot-server">Set up the Network Boot Server</h2>
+
+<p>First, go configure your DHCP server to hand out the appropriate next-server IP and filename. If you’re using pfSense, for example, you may find settings called “Next Server” (example: 192.168.5.243) and “Default BIOS file name” (pxelinux.0) under the Services-&gt;DHCP Server web interface page.</p>
+
+<p>Now we will need a TFTP server.</p>
+
+<h3 id="set-up-tftp">Set up TFTP</h3>
+
+<p>Here, we will:</p>
+
+<ul>
+  <li>Install the tftp-hpa package to provide the TFTP server.</li>
+  <li>Install the syslinux package to provide pxelinux.0 and dependencies as the initial boot target.</li>
+  <li>Download the CoreOS PXE image.</li>
+  <li>Create the pxelinux configuration.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>pacman -S tftp-hpa
+systemctl enable tftpd
+systemctl start tftpd
+
+pacman -S syslinux
+cp /usr/lib/syslinux/bios/pxelinux.0 /srv/tftp/
+cp /usr/lib/syslinux/bios/ldlinux.c32 /srv/tftp/
+
+pacman -S wget
+cd /srv/tftp
+wget https://stable.release.core-os.net/amd64-usr/current/coreos\_production\_pxe.vmlinuz
+wget https://stable.release.core-os.net/amd64-usr/current/coreos\_production\_pxe\_image.cpio.gz
+</code></pre>
+</div>
+
+<h3 id="configure-pxelinux">Configure PXELINUX</h3>
+
+<p>Now we can create the pxelinux configuration. Note that we are passing the cloud-config-url kernel parameter.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mkdir /srv/tftp/pxelinux.cfg
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code># /srv/tftp/pxelinux.cfg/default
+default coreos
+prompt 1
+timeout 15
+display boot.msg
+
+label coreos
+  menu default
+  kernel coreos_production_pxe.vmlinuz
+  append initrd=coreos_production_pxe_image.cpio.gz cloud-config-url=http://archvmhost/coreos-cloud-config.yaml
+</code></pre>
+</div>
+
+<h2 id="set-up-the-virtual-machine-host">Set up the Virtual Machine Host</h2>
+
+<h3 id="set-up-nginx">Set up nginx</h3>
+
+<p>Now let’s install nginx on the archvmhost server to serve up the coreos-cloud-config.yaml file. The reason we are doing this is so that nginx can replace the $public_ipv4 placeholder in the coreos-cloud-config.yaml file with the remote client’s IP address when it requests it over HTTP.</p>
+
+<p>First, install nginx:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>pacman -S nginx
+</code></pre>
+</div>
+
+<p>Now we can create our nginx config, overwriting what is already there.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># /etc/nginx/nginx.conf
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    geo $dollar {
+        default "$";
+    }
+
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location /coreos-cloud-config.yaml {
+            root /srv/http;
+            sub_filter '${dollar}private_ipv4' '$remote_addr';
+            sub_filter_once off;
+            sub_filter_types '*';
+        }
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+    }
+}
+</code></pre>
+</div>
+
+<p>Here I’m only adding support for the $private_ipv4 substitution. In my case this is all on a local network so $remote_addr is an appropriate value to substitute. The $dollar variable is necessary to avoid nginx’s variable substitution here, it’s an ugly workaround but it works.</p>
+
+<p>So what we’ve done here is configured nginx to replace any occurrences of $private_ipv4 in the requested file /coreos-cloud-config.yaml, with the IP address of the remote system ($remote_addr). If the file /srv/http/coreos-cloud-config.yaml contained ‘Your IP is: $private_ipv4’, then you could use curl/etc on another system and get a response saying ‘Your IP is: 192.168.5.100’, for example.</p>
+
+<p>Now we can enable and start nginx.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>systemctl enable nginx
+systemctl start nginx
+</code></pre>
+</div>
+
+<h3 id="create-a-bridge">Create a Bridge</h3>
+
+<p>In my case I want these systems on the same network segment as the host, so I’m going to create a bridge and then let QEMU create the tap device.</p>
+
+<p>The Arch Linux wiki details a <a href="https://wiki.archlinux.org/index.php/Network_bridge">number of options</a> for creating a bridge.
+I am going to use systemd-networkd to create a permanent bridge named br0 with a physical interface of eno1.</p>
+
+<p>First, I will create a few files to describe the network configuration.</p>
+
+<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="c"># /etc/systemd/network/br0.netdev
+</span><span class="nn">[NetDev]</span>
+<span class="py">Name</span><span class="p">=</span><span class="s">br0</span>
+<span class="py">Kind</span><span class="p">=</span><span class="s">bridge</span>
+<span class="c"># Optionally specify a link address
+# Useful if you have DHCP reservations (aka static DHCP)
+</span><span class="py">MACAddress</span><span class="p">=</span><span class="s">01:23:45:67:89:AB</span>
+</code></pre>
+</div>
+
+<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="c"># /etc/systemd/network/br0.network
+</span><span class="nn">[Match]</span>
+<span class="py">Name</span><span class="p">=</span><span class="s">br0</span>
+
+<span class="nn">[Network]</span>
+<span class="py">DHCP</span><span class="p">=</span><span class="s">ipv4</span>
+</code></pre>
+</div>
+<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="c"># /etc/systemd/network/br0-slave.network
+</span><span class="nn">[Match]</span>
+<span class="py">Name</span><span class="p">=</span><span class="s">eno1</span>
+
+<span class="nn">[Network]</span>
+<span class="py">Bridge</span><span class="p">=</span><span class="s">br0</span>
+</code></pre>
+</div>
+
+<p>Now I need to disable dhcpcd, which I was using previously, and enable systemd-networkd instead.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>systemctl disable dhcpcd
+systemctl enable systemd-networkd
+</code></pre>
+</div>
+
+<p>After a reboot (I don’t recommend doing this remotely), connectivity should be back up as normal but with br0 having acquired a DHCP lease, rather than eno1.</p>
+
+<p>Finally, we need to whitelist the bridge interface for QEMU:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir -p /etc/qemu
+<span class="nb">echo</span> <span class="s1">'allow br0'</span> &gt;&gt; /etc/qemu/bridge.conf
+</code></pre>
+</div>
+
+<h3 id="enable-ksm-optional">Enable KSM (Optional)</h3>
+
+<p>We can use <a href="http://www.linux-kvm.org/page/KSM">Kernel Samepage Merging</a> to save on memory consumption. You can search the QEMU source for MADV_MERGEABLE to get an idea of what memory is shared.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># Enable KSM</span>
+<span class="nb">echo </span>1 &gt; /sys/kernel/mm/ksm/run
+</code></pre>
+</div>
+
+<p>You may want to put this in a startup service to make it permanent.</p>
+
+<p>Later on, after starting our virtual machines, we can see how much memory we have saved:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">echo</span> <span class="k">$((</span> <span class="k">$(</span>cat /sys/kernel/mm/ksm/pages_sharing<span class="k">)</span> <span class="o">*</span> <span class="k">$(</span>getconf PAGESIZE<span class="k">)</span> <span class="k">))</span> | numfmt --to<span class="o">=</span>iec-i
+</code></pre>
+</div>
+
+<p>In my tests I was seeing ~4GiB saved with 20 CoreOS VMs. That may not seem like a ton but it definitely adds up when operating at scale. You can also see how much memory is being shared between the processes:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">echo</span> <span class="k">$((</span> <span class="k">$(</span>cat /sys/kernel/mm/ksm/pages_shared<span class="k">)</span> <span class="o">*</span> <span class="k">$(</span>getconf PAGESIZE<span class="k">)</span> <span class="k">))</span> | numfmt --to<span class="o">=</span>iec-i
+</code></pre>
+</div>
+
+<p>For me this was ~219MiB. The chart below demonstrates that we have steeper memory usage growth without KSM.</p>
+
+<div id="ksm_curve_chart" style="width: 800px; height: 500px">
+</div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['VMs', 'Without KSM', 'With KSM'],
+      ['1',  384,      384],
+      ['2',  768,      549],
+      ['3',  1152,       714],
+      ['4',  1536,      879],
+      ['5',  1920,      1044],
+      ['6',  2304,      1209],
+      ['7',  2688,      1374],
+      ['8',  3072,      1539],
+      ['9',  3456,      1704],
+      ['10',  3840,     1869],
+      ['11',  4224,     2034],
+      ['12',  4608,     2199],
+      ['13',  4992,     2364],
+      ['14',  5376,     2529],
+      ['15',  5760,     2694],
+      ['16',  6144,     2859],
+      ['17',  6528,     3024],
+      ['18',  6912,     3189],
+      ['19',  7296,     3354],
+      ['20',  7680,     3519],
+    ]);
+
+    var options = {
+      title: 'Memory Usage of QEMU VMs With and Without KSM',
+      curveType: 'function',
+      legend: { position: 'bottom' },
+      hAxis: { title: 'Number of VMs' },
+      vAxis: { title: 'Memory Usage (MiB)' }
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('ksm_curve_chart'));
+
+    chart.draw(data, options);
+  }
+</script>
+
+<h2 id="create-a-cloudinit-template">Create a Cloudinit Template</h2>
+
+<p>Finally we can create our cloudinit config template. I say template because we are going to put in a placeholder for <code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> that a script will replace when run.</p>
+
+<p>You will want to substitute your own public key here for SSH access (username ‘core’). Or you could create a separate user as documented in the CoreOS cloudinit docs.</p>
+
+<p><code class="highlighter-rouge">coreos-cloud-config.yaml.template</code></p>
+
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="c1">#cloud-config</span>
+<span class="s">ssh_authorized_keys</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">ssh-rsa AAAAB3NzaC1yc2[...] (REPLACE THIS)</span>
+
+<span class="s">coreos</span><span class="pi">:</span>
+  <span class="s">units</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">etcd2.service</span>
+      <span class="s">command</span><span class="pi">:</span> <span class="s">start</span>
+    <span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">fleet.service</span>
+      <span class="s">command</span><span class="pi">:</span> <span class="s">start</span>
+
+  <span class="s">etcd2</span><span class="pi">:</span>
+    <span class="s">discovery</span><span class="pi">:</span> <span class="s">&lt;DISCOVERY_URL&gt;</span>
+    <span class="s">advertise-client-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2379"</span>
+    <span class="s">initial-advertise-peer-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2380"</span>
+    <span class="s">listen-client-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://0.0.0.0:2379"</span>
+    <span class="s">listen-peer-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2380"</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> would normally look something like this: <code class="highlighter-rouge">https://discovery.etcd.io/9e0aeb71f9b477f38e953f0050478666</code>. However, these URLs are one-time use (for each cluster) and require knowing the cluster size ahead of time. They are generated by going to a URL like: <code class="highlighter-rouge">https://discovery.etcd.io/new?size=3</code>.</p>
+
+<p>Because of this, we put in a placeholder that our script will substitute after dynamically allocating a new discovery URL during invocation.</p>
+
+<h2 id="start-the-cluster">Start the Cluster</h2>
+
+<p>First, we need qemu:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>pacman -S qemu
+</code></pre>
+</div>
+
+<p>Then, we’ll put a little script together:</p>
+
+<p><code class="highlighter-rouge">start_coreos_cluster.sh</code></p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">set</span> -eu -o pipefail
+
+<span class="nv">USAGE</span><span class="o">=</span><span class="s2">"Usage: </span><span class="nv">$0</span><span class="s2"> &lt;cloudinit-template&gt; &lt;count&gt;"</span>
+
+<span class="nv">STAGGER_TIME_SEC</span><span class="o">=</span>1.0
+<span class="nv">VM_MEMORY_MB</span><span class="o">=</span>1024
+<span class="nv">VM_CORES</span><span class="o">=</span>1
+<span class="nv">BRIDGE_NAME</span><span class="o">=</span>br0
+
+<span class="k">function </span>usage <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$USAGE</span><span class="s2">"</span>
+    <span class="nb">exit </span>1
+<span class="o">}</span>
+
+<span class="o">[[</span> <span class="nv">$# </span>-ne 2 <span class="o">]]</span> <span class="o">&amp;&amp;</span> usage
+
+<span class="nv">cloudinit_template</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">count</span><span class="o">=</span><span class="nv">$2</span>
+
+<span class="nv">discovery_url</span><span class="o">=</span><span class="k">$(</span>curl -s <span class="s2">"https://discovery.etcd.io/new?size=</span><span class="nv">$count</span><span class="s2">"</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">"Discovery URL: </span><span class="nv">$discovery_url</span><span class="s2">"</span>
+
+sed <span class="s2">"s|&lt;DISCOVERY_URL&gt;|</span><span class="nv">$discovery_url</span><span class="s2">|"</span> <span class="s2">"</span><span class="nv">$cloudinit_template</span><span class="s2">"</span> &gt; /srv/http/coreos-cloud-config.yaml
+
+<span class="k">for</span> <span class="o">((</span> i <span class="o">=</span> 1; i &lt;<span class="o">=</span> <span class="nv">$count</span>; i++ <span class="o">))</span>
+<span class="k">do
+    </span><span class="nv">digits</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf</span> <span class="s2">"%02x"</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span><span class="k">)</span>
+    <span class="nv">vm_name</span><span class="o">=</span><span class="s2">"coreos_</span><span class="nv">$digits</span><span class="s2">"</span>
+    <span class="nv">vm_mac</span><span class="o">=</span><span class="s2">"52:54:00:12:34:</span><span class="nv">$digits</span><span class="s2">"</span>
+    qemu-system-x86_64 -name <span class="s2">"</span><span class="nv">$vm_name</span><span class="s2">"</span> <span class="se">\</span>
+        -m 1024 <span class="se">\</span>
+        -net bridge <span class="se">\</span>
+        -net nic,vlan<span class="o">=</span>0,model<span class="o">=</span>virtio,macaddr<span class="o">=</span><span class="nv">$vm_mac</span> <span class="se">\</span>
+        -boot n <span class="se">\</span>
+        -machine <span class="nv">accel</span><span class="o">=</span>kvm <span class="se">\</span>
+        -cpu host <span class="se">\</span>
+        -smp <span class="s2">"</span><span class="nv">$VM_CORES</span><span class="s2">"</span> <span class="se">\</span>
+        -display none &amp;
+
+    sleep <span class="s2">"</span><span class="nv">$STAGGER_TIME_SEC</span><span class="s2">"</span>
+<span class="k">done</span>
+</code></pre>
+</div>
+
+<p>We can call this like so: <code class="highlighter-rouge">./start_coreos_cluster.sh coreos-cloud-config.yaml.template 3</code> to start a 3-node CoreOS cluster.</p>
+
+<p>The script does the following:</p>
+
+<ul>
+  <li>Retrieves a new discovery URL based on the size of the cluster specified.</li>
+  <li>Substitutes that URL in place of the <code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> placeholder in the specified config template.</li>
+  <li>Starts a QEMU VM in the background that will network boot. The MAC addresses are specifically set to avoid conflicts.</li>
+</ul>
+
+<p>There are also a few settings up at the top of the script:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>variable</th>
+      <th>default</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>STAGGER_TIME_SEC</td>
+      <td>1.0</td>
+      <td>Time, in seconds, between starting each VM</td>
+    </tr>
+    <tr>
+      <td>VM_MEMORY_MB</td>
+      <td>1024</td>
+      <td>Amount of memory for each VM in MiB</td>
+    </tr>
+    <tr>
+      <td>VM_CORES</td>
+      <td>1</td>
+      <td>Number of processor cores for each VM</td>
+    </tr>
+    <tr>
+      <td>BRIDGE_NAME</td>
+      <td>br0</td>
+      <td>Name of the network bridge device</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="confirm-functionality">Confirm Functionality</h2>
+
+<p>There are a few items to check that the cluster is healthy.</p>
+
+<p>First, check the discovery URL in a browser or with curl. For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>curl -s https://discovery.etcd.io/57de7e09a1376036179ca4b3092f40cc | jq
+</code></pre>
+</div>
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"node"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"dir"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/3470e6055e4e1119"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a1576454e3bf449d9fd98c3d6b28006a=http://192.168.5.236:2380"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021445</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021445</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/dc0df5ec4a3f1c1f"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"002ce5c216ec446fad0fdf28c4f75b51=http://192.168.5.200:2380"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021527</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021527</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/cd968f42a6e76ec6"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c1dff243172643eea483aea66984545a=http://192.168.5.237:2380"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021548</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021548</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/dec55d937871aa93"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3ba8ca7970d64d87a395e668de7d8908=http://192.168.5.229:2380"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021567</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021567</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/a365ceee28d65bb5"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dd219995e6c04162b5520d7313148dfe=http://192.168.5.231:2380"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021633</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021633</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149020480</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149020480</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+<p>Here I’m piping the output to the ‘jq’ utility for pretty formatting. You can see all 3 nodes in the array have registered. If this were not the case, the nodes array would be empty or would not exist.</p>
+
+<p>Another thing to do is to simply login to one of the CoreOS nodes and do something like:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>etcdctl cluster-health
+</code></pre>
+</div>
+
+<p>Then you may want to throw some data into etcd:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>etcdctl mk /testing testdata
+</code></pre>
+</div>
+
+<p>Now on other nodes, make sure the data is there:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>etcdctl get /testing
+</code></pre>
+</div>
+
+<p>or</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>curl -sL http://127.0.0.1:2379/v2/keys/testing
+</code></pre>
+</div>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

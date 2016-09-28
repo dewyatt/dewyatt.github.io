@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Seagate External Drive LEDs in Linux</title>
+  <meta name="description" content="Note: If you simply want the software to control the LEDs, see seagate-leds.">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2013/06/28/seagate-external-drive-leds-in-linux/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Seagate External Drive LEDs in Linux</h1>
+    <p class="post-meta"><time datetime="2013-06-28T15:00:00-04:00" itemprop="datePublished">Jun 28, 2013</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">Analyzing USB traffic</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-3">
+                  <a href="#tocAnchor-1-2-1"><span class="tocnumber">2.1</span> <span class="toctext">Windows software</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-4">
+                  <a href="#tocAnchor-1-2-2"><span class="tocnumber">2.2</span> <span class="toctext">usbmon/Wireshark</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-5">
+                  <a href="#tocAnchor-1-2-3"><span class="tocnumber">2.3</span> <span class="toctext">The Capture</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-6">
+                  <a href="#tocAnchor-1-2-4"><span class="tocnumber">2.4</span> <span class="toctext">Analysis</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-7">
+                  <a href="#tocAnchor-1-2-5"><span class="tocnumber">2.5</span> <span class="toctext">SCSI Commands</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-8">
+                  <a href="#tocAnchor-1-2-6"><span class="tocnumber">2.6</span> <span class="toctext">Capture Summary</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-9">
+                  <a href="#tocAnchor-1-2-7"><span class="tocnumber">2.7</span> <span class="toctext">Experiments</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-10">
+                  <a href="#tocAnchor-1-2-8"><span class="tocnumber">2.8</span> <span class="toctext">Conclusion</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-11">
+              <a href="#tocAnchor-1-11"><span class="tocnumber">3</span> <span class="toctext">Debugging the Windows software</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-12">
+                  <a href="#tocAnchor-1-11-1"><span class="tocnumber">3.1</span> <span class="toctext">What to debug?</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-13">
+                  <a href="#tocAnchor-1-11-2"><span class="tocnumber">3.2</span> <span class="toctext">Debugging</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-14">
+              <a href="#tocAnchor-1-14"><span class="tocnumber">4</span> <span class="toctext">Conclusion</span></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><p>
+  <span class="note">
+<span>
+<strong>Note</strong>: If you simply want the software to control the LEDs, see <a href="http://github.com/dewyatt/seagate-leds">seagate-leds</a>.
+</span>
+</span>
+</p>
+
+<h1 id="tocAnchor-1-1">Introduction</h1>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/18t.jpg" data-jslghtbx="/assets/images/18.jpg" data-jslghtbx-group="" />
+</p>
+
+<p>Recently, I purchased a Seagate GoFlex Desk USB 3.0 external hard drive (Model STAC1000101).
+(These seem to have been replaced with the Backup Plus Desktop).
+This drive is equipped with a pulsing (PWM) activity LED and 4 other LEDs that form a capacity gauge indicating the remaining disk space.
+I noticed these LEDs don’t function in Linux and there does not appear to be any Linux software to support them.</p>
+
+<p>So naturally I felt an obligation to fill in this little feature gap.
+I’m not aiming for a full alternative to the Windows software, I just want to be able to control these LEDs in Linux.</p>
+
+<p>There were two obvious ways to proceed:</p>
+
+<ol>
+  <li>Analyze the USB traffic generated by the Windows software</li>
+  <li>Debug the Windows software and find the LED control functions</li>
+</ol>
+
+<p>I will start off with #1.</p>
+
+<h1 id="tocAnchor-1-2">Analyzing USB traffic</h1>
+
+<p>There are a number of ways to capture the USB traffic. Here’s my plan:</p>
+
+<ol>
+  <li>Run Windows in a VM</li>
+  <li>Capture the traffic with usbmon</li>
+  <li>Analyze the traffic with Wireshark</li>
+</ol>
+
+<h2 id="tocAnchor-1-2-1">Windows software</h2>
+
+<p>There are a few different pieces of software available to work with these drives in Windows:</p>
+
+<ol>
+  <li><a href="http://www.seagate.com/support/external-hard-drives/portable-hard-drives/expansion-portable/drive-settings-master-dl/">Seagate Drive Settings</a></li>
+  <li><a href="http://www.seagate.com/support/external-hard-drives/portable-hard-drives/goflex/goflex-software-master">Seagate Dashboard</a></li>
+  <li><a href="http://www.seagate.com/support/software/dashboard/seagate-dashboard-master-dl/">Seagate Dashboard 2.0</a></li>
+</ol>
+
+<p>Seagate Drive Settings was a tad buggy so I avoided it.
+Seagate Dashboard is the software that comes bundled on the drive so I decided it was the best place to start.</p>
+
+<p>
+  <span class="note">
+<span>
+<strong>Interesting note</strong>: The package GoFlex_BundledSW.zip contains two <strong>.svn</strong> directories that point to an internet-accessible SVN server at <a href="https://sjsvn.memeo.us:22223/ocsvn/dashboard">https://sjsvn.memeo.us:22223/ocsvn/dashboard</a> and an author of jtran. Oops!
+</span>
+</span>
+</p>
+
+<p>I installed it in a Windows 7 VirtualBox VM.
+When I connected my drive, all 5 of the LEDs turned on which is perfect.
+The only partition I had was an ext4 partition so I was glad to see Seagate Dashboard did not really mind too much.</p>
+
+<p>After that, I located the option to control the LEDs:</p>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/1t.jpg" data-jslghtbx="/assets/images/1.jpg" data-jslghtbx-group="" />
+</p>
+
+<p>That will make it easier to trim down the USB traffic to only what I am interested in.</p>
+
+<h2 id="tocAnchor-1-2-2">usbmon/Wireshark</h2>
+
+<p><a href="http://www.kernel.org/doc/Documentation/usb/usbmon.txt">usbmon</a> is a linux module that enables the capture of I/O traces on the USB bus. I’ll use <a href="http://www.wireshark.org">Wireshark</a> as well because it has nice dissectors and a GUI. First, I loaded the usbmon module:</p>
+
+<p>
+  <code class="highlighter-rouge"># modprobe usbmon</code>
+</p>
+
+<p>This creates a device for each USB bus: /dev/usbmon1, /dev/usbmon2, … (usbmon0 is “all buses”). Now I need to determine which bus the drive is on:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>lsusb
+$ lsusb
+Bus 001 Device 002: ID 0bc2:50a1 Seagate RSS LLC
+...
+</code></pre>
+</div>
+
+<p>The drive is on bus 1 (device 2). That means /dev/usbmon1 is the device I will use to capture traces. To avoid the need to run Wireshark as root, I modified the permissions of this device:</p>
+
+<p>
+  <code class="highlighter-rouge"># chmod o=rw /dev/usbmon1</code>
+</p>
+
+<p>
+  <span class="note">
+<span>
+<strong>Note</strong>: Obviously this creates a bit of security issue until usbmon is unloaded.
+</span>
+</span>
+</p>
+
+<h2 id="tocAnchor-1-2-3">The Capture</h2>
+
+<p>For my first capture I wanted to see the traffic generated when pressing “Turn Lights On”. The steps I took were:</p>
+
+<ol>
+  <li>I made sure the LEDs were off</li>
+  <li>I started a capture in Wireshark</li>
+  <li>I pressed the “Turn Lights On” button</li>
+  <li>I stopped the capture</li>
+</ol>
+
+<p>I repeated this with the “Turn Lights Off” option.
+The resulting captures:</p>
+
+<ul>
+  <li><a href="/assets/turn_leds_on.pcapng">turn_leds_on.pcapng</a></li>
+  <li><a href="/assets/turn_leds_off.pcapng">turn_leds_off.pcapng</a></li>
+</ul>
+
+<p>I’ll analyze turn_lights_on next.</p>
+
+<h2 id="tocAnchor-1-2-4">Analysis</h2>
+
+<p>When I originally viewed the turn_lights_on capture in Wireshark, I found it to be a bit lacking. The dissectors were not giving much information.</p>
+
+<p>A quick look through the data turned up the strings “USBS” and “USBC” which, thanks to Google, pointed me in the right direction. Apparently Wireshark did not identify the interface class as mass storage and thus failed to identify certain SCSI protocol elements. A <a href="http://bugs.wireshark.org/bugzilla/show_bug.cgi?id=8131">quick patch</a> yielded something <em>slightly</em> better:</p>
+
+<p>
+  <img class="jslghtbx-thmb" src="/assets/images/2t.jpg" data-jslghtbx="/assets/images/2.jpg" data-jslghtbx-group="" />
+</p>
+
+<p>The SCSI Inquiry pieces are generally a <em>read</em> operation used for obtaining serial numbers, etc. What I’m interested in are the SCSI commands.</p>
+
+<h2 id="tocAnchor-1-2-5">SCSI Commands</h2>
+
+<p>Here’s the first SCSI command (0xFA), as printed in Wireshark:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>No.     Time           Source                Destination           Protocol Length Info
+     71 0.098032000    host                  2.2                   USBMS    95     SCSI Command: 0xfa LUN:0x00 
+
+Frame 71: 95 bytes on wire (760 bits), 95 bytes captured (760 bits) on interface 0
+USB URB
+USB Mass Storage
+    Signature: 0x43425355
+    Tag: 0x864e8d58
+    DataTransferLength: 4
+    Flags: 0x80
+    .... 0000 = LUN: 0x00
+    ...0 1010 = CDB Length: 0x0a
+SCSI CDB 0xfa
+    [LUN: 0]
+    [Command Set:Direct Access Device (0x00) (Using default commandset)]
+    SPC-2 Opcode: Unknown (0xfa)
+    Data (10 bytes)
+
+0000  c0 03 0c ea 03 88 ff ff 53 03 02 02 02 00 2d 00   ........S.....-.
+0010  b3 23 e7 50 00 00 00 00 3a 0d 0b 00 8d ff ff ff   .#.P....:.......
+0020  1f 00 00 00 1f 00 00 00 00 00 00 00 00 00 00 00   ................
+0030  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00   ................
+0040  55 53 42 43 58 8d 4e 86 04 00 00 00 80 00 0a fa   USBCX.N.........
+0050  00 00 00 00 00 04 00 00 00 00 00 00 00 00 00      ...............
+</code></pre>
+</div>
+
+<p>Wireshark is not as friendly as it could be here, it does not tell me whether this USBMS operation is IN or OUT. This can be determined by examining the Flags item under USB Mass Storage. <code class="highlighter-rouge">0x80 =&gt; IN</code>. Reading through <a href="https://github.com/torvalds/linux/blob/master/include/linux/usb/storage.h">storage.h</a> of the linux kernel source is helpful here as well.
+This command is requesting 4 bytes from the drive (DataTransferLength).</p>
+
+<p>The data is returned in #74:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>No.     Time           Source                Destination           Protocol Length Info
+     74 0.101040000    2.1                   host                  USB      68     URB_BULK in
+
+Frame 74: 68 bytes on wire (544 bits), 68 bytes captured (544 bits) on interface 0
+USB URB
+Leftover Capture Data: 01ff55aa
+</code></pre>
+</div>
+
+<p>The interesting part is the “Leftover capture data”. These are the 4 bytes being received by the host (computer): <code class="highlighter-rouge">01 ff 55 aa</code>.</p>
+
+<p>Moving on to the next SCSI command (0xF9):</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>No.     Time           Source                Destination           Protocol Length Info
+    147 0.204948000    host                  2.2                   USBMS    95     SCSI Command: 0xf9 LUN:0x00 
+
+Frame 147: 95 bytes on wire (760 bits), 95 bytes captured (760 bits) on interface 0
+USB URB
+USB Mass Storage
+    Signature: 0x43425355
+    Tag: 0x864e8d58
+    DataTransferLength: 4
+    Flags: 0x00
+    .... 0000 = LUN: 0x00
+    ...0 1010 = CDB Length: 0x0a
+SCSI CDB 0xf9
+</code></pre>
+</div>
+
+<p>This command is sending 4 bytes to the drive. These bytes are in #149 and are: <code class="highlighter-rouge">02 ff 00 00</code>. I found the next SCSI command to be 0xF7 which reads in these bytes: <code class="highlighter-rouge">04 01 00 00</code>. The final command was 0xF8 which sends: <code class="highlighter-rouge">04 0f 00 00</code>. These are all the important parts.</p>
+
+<h2 id="tocAnchor-1-2-6">Capture Summary</h2>
+
+<p>Here is the sequence I observed:</p>
+
+<ul>
+  <li>Command 0xFA: Read: <code class="highlighter-rouge">01 ff 55 aa</code></li>
+  <li>Command 0xF9: Write: <code class="highlighter-rouge">02 ff 00 00</code></li>
+  <li>Command 0xF7: Read <code class="highlighter-rouge">04 01 00 00</code></li>
+  <li>Command 0xF8: Write <code class="highlighter-rouge">04 0f 00 00</code></li>
+</ul>
+
+<p>Based on the similarities, I made the following assumptions:</p>
+
+<ul>
+  <li>Command 0xFA: Read X (last 2 bytes are always read as 55 aa)</li>
+  <li>Command 0xF9: Write X (last 2 bytes ignored)</li>
+  <li>Command 0xF7: Read Y (last 2 bytes ignored?)</li>
+  <li>Command 0xF8: Write Y (last 2 bytes ignored?)</li>
+</ul>
+
+<p>I don’t know what X and Y are but I know they probably control the LEDs. At this point I needed to experiment a bit to figure out what these commands really do.</p>
+
+<h2 id="tocAnchor-1-2-7">Experiments</h2>
+
+<p>So I need to experiment with these SCSI commands. How can I send SCSI commands in Linux? An easy way is <a href="http://sg.danny.cz/sg/sg3_utils.html">sg3_utils</a>.</p>
+
+<p>My device is /dev/sdc.</p>
+
+<p>
+  <span class="note">
+<span>
+<strong>Note</strong>: In general, it’s better to use /dev/disk/by-, especially with removable drives
+</span>
+</span>
+</p>
+
+<p>Here’s a quick summary of commands for experimentation:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>function</th>
+      <th>opcode</th>
+      <th>command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Read X</td>
+      <td>0xFA</td>
+      <td><code class="highlighter-rouge">sg_raw -n -r 4 /dev/sdc fa 00 00 00 00 00 04 00 00 00</code></td>
+    </tr>
+    <tr>
+      <td>Write X</td>
+      <td>0xF9</td>
+      <td><code class="highlighter-rouge">echo -e "\x02\xff\x00\x00"</code> | <code class="highlighter-rouge">sg_raw -n -s 4 /dev/sdc f9 00 00 00 00 00 04 00 00 00</code></td>
+    </tr>
+    <tr>
+      <td>Read Y</td>
+      <td>0xF7</td>
+      <td><code class="highlighter-rouge">sg_raw -n -r 4 /dev/sdc f7 00 00 00 00 00 04 00 00 00</code></td>
+    </tr>
+    <tr>
+      <td>Write Y</td>
+      <td>0xF8</td>
+      <td><code class="highlighter-rouge">echo -e "\x04\x0f\x00\x00"</code> | <code class="highlighter-rouge">sg_raw -n -s 4 /dev/sdc f8 00 00 00 00 00 04 00 00 00</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>I used these commands to verify that 0xFA/0xF9 read/write the same data and 0xF7/0xF8 read/write the same data. The last two bytes for both commands never seem to change, no matter what is written to them.</p>
+
+<p>So in the end, I drew the following conclusions:</p>
+
+<ul>
+  <li>Commands 0xFA/0xF9 control the activity LED. Only the first byte seems to really matter (this isn’t quite the case as I found out later).</li>
+  <li>Commands 0xF7/0xF8 control the four status LEDs. Only the first two bytes are functional.</li>
+</ul>
+
+<p>For the activity LED, the values I have discovered are:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>01</strong></td>
+      <td>Turn all LEDs off</td>
+    </tr>
+    <tr>
+      <td><strong>02</strong></td>
+      <td>Turn on activity LED. Pulse on disk access, stay on solidly after. This also enables control of the status LEDs.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For the status LEDs (0xF7/0xF8), the first two bytes seem to have the following meaning:</p>
+
+<ul>
+  <li>First byte: Number of LEDs to enable (interpreted another way: number of bits of the second byte to actually pay attention to)</li>
+  <li>Second byte: Bitmask of the state of the status LEDs (0 - off, 1 - on)</li>
+</ul>
+
+<p>So, the following sequence of commands should turn all status LEDs of this drive (and similar drives) on:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>###### Turn on activity LED, enable status LEDs ######
+
+echo -e "\x02\xff\x00\x00" | sg_raw -n -s 4 /dev/sdc f9 00 00 00 00 00 04 00 00 00
+
+###### Turn all status LEDs on ######
+echo -e "\xff\xff\x00\x00" | sg_raw -n -s 4 /dev/sdc f8 00 00 00 00 00 04 00 00 00
+</code></pre>
+</div>
+
+<h2 id="tocAnchor-1-2-8">Conclusion</h2>
+
+<p>This is about all the information that I can get from the usb traffic alone. To confirm my assumptions I’ll need to do a bit of debugging.</p>
+
+<h1 id="tocAnchor-1-11">Debugging the Windows software</h1>
+
+<p>Now it’s time to start inspecting this Seagate Dashboard software to hopefully confirm my understanding of these SCSI commands.</p>
+
+<h2 id="tocAnchor-1-11-1">What to debug?</h2>
+
+<p>The first issue I had to figure out was what process should I debug or what executable should I disassemble?</p>
+
+<p>It stands to reason that sending raw SCSI commands to a drive is a restricted operation, not something a userland program can normally do.
+This is, however, something a service can do.
+Looking in services.msc I found “Seagate Dashboard Service” (<code class="highlighter-rouge">C:\Program Files\Seagate\Seagate Dashboard\SeagateDashboardService.exe</code>).</p>
+
+<h2 id="tocAnchor-1-11-2">Debugging</h2>
+
+<p>Services are not launched in the normal way so it’s easiest to simply attach a debugger (with privileges) to the process.
+I launched a debugger as an administrator and attached to the running SeagateDashboardService.exe process.
+The first thing I noticed was a bunch of messages printed out like:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 49) - RemoteServerImpl::DoRefreshCapacityLed() - Set new CapacityLedsOnCount=4
+I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 50) - RemoteServerImpl::GetAllExternalDrives() - Returning all cached drives. count=1
+I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 49) - RemoteServerImpl::SetSelectedDevice() - Set new device:GoFlex Desk - \\.\PHYSICALDRIVE1
+</code></pre>
+</div>
+
+<p>So there is some debugging log that is being printed out which is nice.
+Looking through the recognized functions I can see there is some debugging info present as some functions have names (such as <code class="highlighter-rouge">stxdevif_?SendCommand@CsendToService@@QAEHXZ</code>). I can use something like <a href="http://demangler.com">demangler</a> to see what kind of signature these functions have without analyzing them a bunch.</p>
+
+<p>There are a number of ways I can proceed from here:</p>
+
+<ul>
+  <li>Search the process memory for the string LED or light</li>
+  <li>Search for function names containing LED or light (since some debugging info is present)</li>
+  <li>Set breakpoints on Windows API calls that can send SCSI commands to devices</li>
+  <li>Set breakpoints on all recognized functions and see what breakpoints are hit when pressing the “Turn Lights On/Off” button</li>
+</ul>
+
+<p>Since I don’t have a clue what Windows APIs can be used to send SCSI commands, I’m going for the last option.
+Specifically what I did was:</p>
+
+<ol>
+  <li>Place a breakpoint on all recognized functions</li>
+  <li>Run it and disable all breakpoints that are triggered</li>
+  <li>Once it runs without triggering any breakpoints, hit the “Turn Lights On” button</li>
+  <li>Step through functions until I see the lights actually come on</li>
+  <li>Look at the last function executed since it actually turned the light/lights on</li>
+</ol>
+
+<p>This led me to a function that was calling <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363216(v=vs.85).aspx">DeviceIoControl</a>.
+Stepping over this function call shows that it is indeed sending SCSI commands to the drive.</p>
+
+<p>I won’t go into details due to the effort it would take, but it’s pretty simple to figure things out from here.</p>
+
+<h1 id="tocAnchor-1-14">Conclusion</h1>
+
+<p>At this point I have a pretty clear picture on how to control the LEDs of this drive.
+The final result is available on github:</p>
+
+<h4 id="span-classicon-github-circledseagate-ledshttpsgithubcomdewyattseagate-ledsspan">
+  <span class="icon-github-circled">
+    <a href="https://github.com/dewyatt/seagate-leds">seagate-leds</a>
+  </span>
+</h4>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

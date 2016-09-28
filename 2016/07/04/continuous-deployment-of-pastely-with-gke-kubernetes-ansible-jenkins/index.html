@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Continuous Deployment of Pastely with GKE/Kubernetes, Ansible, and Jenkins</title>
+  <meta name="description" content="Introduction">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2016/07/04/continuous-deployment-of-pastely-with-gke-kubernetes-ansible-jenkins/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Continuous Deployment of Pastely with GKE/Kubernetes, Ansible, and Jenkins</h1>
+    <p class="post-meta"><time datetime="2016-07-04T04:05:12-04:00" itemprop="datePublished">Jul 4, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">Technologies Overview</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-3">
+                  <a href="#tocAnchor-1-2-1"><span class="tocnumber">2.1</span> <span class="toctext">Common Technologies</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-4">
+                  <a href="#tocAnchor-1-2-2"><span class="tocnumber">2.2</span> <span class="toctext">Backend</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-5">
+                  <a href="#tocAnchor-1-2-3"><span class="tocnumber">2.3</span> <span class="toctext">Frontend</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-6">
+              <a href="#tocAnchor-1-6"><span class="tocnumber">3</span> <span class="toctext">Running Locally</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-7">
+                  <a href="#tocAnchor-1-6-1"><span class="tocnumber">3.1</span> <span class="toctext">Frontend</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-8">
+                  <a href="#tocAnchor-1-6-2"><span class="tocnumber">3.2</span> <span class="toctext">Backend</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-9">
+                  <a href="#tocAnchor-1-6-3"><span class="tocnumber">3.3</span> <span class="toctext">Connect</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-10">
+              <a href="#tocAnchor-1-10"><span class="tocnumber">4</span> <span class="toctext">Bootstrapping in GKE / Kubernetes</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-11">
+                  <a href="#tocAnchor-1-10-1"><span class="tocnumber">4.1</span> <span class="toctext">Create a Cluster</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-12">
+                  <a href="#tocAnchor-1-10-2"><span class="tocnumber">4.2</span> <span class="toctext">Deploy the Backend</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-13">
+                  <a href="#tocAnchor-1-10-3"><span class="tocnumber">4.3</span> <span class="toctext">Deploy the Frontend</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-14">
+              <a href="#tocAnchor-1-14"><span class="tocnumber">5</span> <span class="toctext">Continuous Deployment with Jenkins</span></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><h1 id="tocAnchor-1-1">Introduction</h1>
+
+<p><a href="http://github.com/dewyatt/pastely-backend">Pastely</a> is a little web app for sharing code pastes, a la pastebin and many others.
+<strong>Note</strong>: Limited browser support due to the use of CSS flexbox. Modern Chrome/Firefox should work.
+It was written for the simple purpose of learning a handful of new technologies.</p>
+
+<p>It is hosted in Google’s Container Engine/Kubernetes and automatically deployed with Docker, Ansible, and Jenkins.</p>
+
+<p>
+  <img src="/assets/images/26.png" alt="" />
+</p>
+
+<p>The deployment scenario described here is not ideal but it’s a good start. Generally I believe it’s better to have separate staging and production clusters if possible, rather than using namespaces as below.</p>
+
+<h1 id="tocAnchor-1-2">Technologies Overview</h1>
+
+<h2 id="tocAnchor-1-2-1">Common Technologies</h2>
+
+<p>The frontend and backend both utilize some common technologies, including:</p>
+
+<ul>
+  <li><a href="https://www.docker.com">Docker</a></li>
+  <li><a href="https://www.ansible.com">Ansible</a></li>
+  <li><a href="http://kubernetes.io">Kubernetes</a></li>
+  <li><a href="http://alpinelinux.org">Alpine Linux</a></li>
+  <li><a href="https://jenkins.io/">Jenkins</a></li>
+</ul>
+
+<h2 id="tocAnchor-1-2-2">Backend</h2>
+
+<p>The backend portion provides a simple API of HTTP endpoints to store and retrieve pastes.</p>
+
+<h3 id="languages">Languages</h3>
+
+<ul>
+  <li>Python 3</li>
+</ul>
+
+<h3 id="librariesframeworks">Libraries/Frameworks</h3>
+
+<ul>
+  <li><a href="https://www.djangoproject.com">Django</a></li>
+  <li><a href="http://www.django-rest-framework.org">Django Rest Framework</a></li>
+</ul>
+
+<h3 id="tooling--software">Tooling / Software</h3>
+
+<ul>
+  <li><a href="https://pypi.python.org/pypi/pip">pip</a> + <a href="https://virtualenv.pypa.io">virtualenv</a></li>
+  <li><a href="http://projects.unbit.it/uwsgi">uWSGI</a></li>
+</ul>
+
+<h2 id="tocAnchor-1-2-3">Frontend</h2>
+
+<p>The frontend is a plain React web app.</p>
+
+<p>It does not use Redux/Flux. I did an initial implementation using Alt.js but decided to keep things simple and removed it.</p>
+
+<h3 id="languages-1">Languages</h3>
+
+<ul>
+  <li>Javascript</li>
+  <li>ES6</li>
+  <li>JSX</li>
+</ul>
+
+<h3 id="librariesframeworks-1">Libraries/Frameworks</h3>
+
+<ul>
+  <li><a href="reactjs.com">React</a></li>
+  <li><a href="https://github.com/reactjs/react-router">React Router</a></li>
+  <li><a href="https://www.muicss.com/">MUI</a></li>
+</ul>
+
+<h3 id="tooling--software-1">Tooling / Software</h3>
+
+<ul>
+  <li><a href="https://webpack.github.io">Webpack</a></li>
+  <li><a href="http://npmjs.com">NPM</a></li>
+  <li><a href="https://babeljs.io">Babel</a></li>
+  <li><a href="https://www.nginx.com">Nginx</a></li>
+</ul>
+
+<h1 id="tocAnchor-1-6">Running Locally</h1>
+
+<p>Running the app locally is simple.</p>
+
+<h2 id="tocAnchor-1-6-1">Frontend</h2>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/dewyatt/pastely-frontend.git
+<span class="nb">cd </span>pastely-frontend
+npm install
+npm start
+</code></pre>
+</div>
+
+<h2 id="tocAnchor-1-6-2">Backend</h2>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/dewyatt/pastely-backend.git
+<span class="nb">cd </span>pastely-backend
+virtualenv3 venv
+. venv/bin/activate
+pip install -r requirements/local.txt
+python manage.py makemigrations --settings<span class="o">=</span>pastely.settings.local
+python manage.py makemigrations --settings<span class="o">=</span>pastely.settings.local paste
+python manage.py migrate --settings<span class="o">=</span>pastely.settings.local
+python manage.py runserver 127.0.0.1:8000 --settings<span class="o">=</span>pastely.settings.local
+</code></pre>
+</div>
+
+<h2 id="tocAnchor-1-6-3">Connect</h2>
+
+<p>Now you can connect to <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>. The Django admin interface is available at <code class="highlighter-rouge">/admin</code>. You can create a user to access the admin interface like so:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>python manage.py createsuperuser --settings<span class="o">=</span>pastely.settings.local
+</code></pre>
+</div>
+
+<h1 id="tocAnchor-1-10">Bootstrapping in GKE / Kubernetes</h1>
+
+<p>Getting things going within GKE is a bit more involved.</p>
+
+<p>To start with, you must install the <a href="https://cloud.google.com/sdk">Google Cloud SDK</a>.</p>
+
+<p>Then, you’ll want to <a href="https://console.cloud.google.com/iam-admin/projects">create a new project</a> in the Google Cloud Platform console. This gives you a project ID that you can substitute below (mine was <code class="highlighter-rouge">pastely-1357</code>).</p>
+
+<h2 id="tocAnchor-1-10-1">Create a Cluster</h2>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># initialize the Google Cloud SDK, authenticate, set default project, zone, etc.</span>
+gcloud init
+<span class="c"># create a k8s cluster using the defaults</span>
+gcloud container clusters create pastely
+<span class="c"># set up credentials for k8s</span>
+gcloud container clusters get-credentials pastely
+<span class="c"># check: make sure the cluster is visible</span>
+kubectl cluster-info
+</code></pre>
+</div>
+
+<p>Now that we have a cluster running, we can create a couple of k8s namespaces to hold our staging and production resources.</p>
+
+<p>This makes it easier to keep things separated without creating multiple clusters.</p>
+
+<p>You can create namespaces directly with <code class="highlighter-rouge">kubectl create namespace</code> or you can use YAML/JSON:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">cd </span>pastely-backend/deploy
+<span class="c"># create k8s namespaces to hold staging+production resources</span>
+kubectl create -f kubernetes/namespaces.yaml
+</code></pre>
+</div>
+
+<h2 id="tocAnchor-1-10-2">Deploy the Backend</h2>
+
+<h3 id="postgresql-database">PostgreSQL Database</h3>
+
+<p>Now we can deploy our database.</p>
+
+<p>First, we’ll need to create a k8s secret that contains information like the database username/password.</p>
+
+<p>We’ll pass this secret information via the environment to the <a href="https://hub.docker.com/_/postgres">official PostgreSQL docker container</a>.</p>
+
+<p>The file <code class="highlighter-rouge">pastely-backend/deploy/kubernetes/secrets/staging/staging-database-secret.yaml</code> contains base64-encoded data similar to the below.</p>
+
+<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="s">kind</span><span class="pi">:</span> <span class="s">Secret</span>
+<span class="s">metadata</span><span class="pi">:</span>
+  <span class="s">name</span><span class="pi">:</span> <span class="s">pastely-database-secret</span>
+<span class="s">type</span><span class="pi">:</span> <span class="s">Opaque</span>
+<span class="s">data</span><span class="pi">:</span>
+  <span class="s">user</span><span class="pi">:</span> <span class="s">dXNlcm5hbWU=</span>
+  <span class="s">password</span><span class="pi">:</span> <span class="s">eW91cnBhc3N3b3Jk</span>
+  <span class="s">database</span><span class="pi">:</span> <span class="s">ZGF0YWJhc2VuYW1l</span>
+</code></pre>
+</div>
+
+<p>With it, we can create our database secret:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># create our database secret</span>
+kubectl create -f kubernetes/secrets/staging/staging-database-secret.yaml --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<p>Then we can move on to creating the database deployment.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># create a persistent disk for the postgresql database in the staging environment</span>
+gcloud compute disks create pastely-pg-data-staging --size 200GB
+<span class="c"># create a deployment for the database</span>
+kubectl create -f kubernetes/deployments/database.yaml --namespace<span class="o">=</span>pastely-staging
+<span class="c"># create a service to refer to the database via DNS</span>
+kubectl create -f kubernetes/services/database.yaml --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<h3 id="backend-2">Backend</h3>
+
+<p>First we need to build a container.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker build <span class="se">\</span>
+--build-arg<span class="o">=</span><span class="nv">deploy_environment</span><span class="o">=</span>staging <span class="se">\</span>
+--build-arg<span class="o">=</span><span class="nv">git_sha1</span><span class="o">=</span>f87865de08c452475bd419cfb90b4b8d77bb1b99 <span class="se">\</span>
+-t gcr.io/pastely-1357/pastely-backend:f87865de08c452475bd419cfb90b4b8d77bb1b99.staging.v1 .
+</code></pre>
+</div>
+
+<p>This would build a docker container based on the git commit referenced. The arguments are passed into the Dockerfile and then to Ansible to build out the container.</p>
+
+<p>Once built, it can be uploaded with:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>gcloud docker push gcr.io/pastely-1357/pastely-backend:f87865de08c452475bd419cfb90b4b8d77bb1b99.staging.v1
+</code></pre>
+</div>
+
+<p>This would upload it to the <a href="https://console.cloud.google.com/kubernetes/images/list">Google Container Registry</a>.</p>
+
+<p>Now again we will want to create a secret. This time the secret is an INI file used by the Django app to retrieve the database credentials and Django secret key. It looks something like this:</p>
+
+<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="nn">[pastely]</span>
+<span class="py">SECRET_KEY</span><span class="p">=</span><span class="s">djangosecretkeyhere</span>
+<span class="py">DATABASE_NAME</span><span class="p">=</span><span class="s">databasename</span>
+<span class="py">DATABASE_USER</span><span class="p">=</span><span class="s">username</span>
+<span class="py">DATABASE_PASSWORD</span><span class="p">=</span><span class="s">yourpassword</span>
+<span class="py">DATABASE_HOST</span><span class="p">=</span><span class="s">pastely-database</span>
+<span class="py">DATABASE_PORT</span><span class="p">=</span><span class="s">5432</span>
+</code></pre>
+</div>
+
+<p>We can turn this into a k8s secret with:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># create a secret from our config.ini</span>
+kubectl create secret generic pastely-config-secret --from-file<span class="o">=</span>config.ini<span class="o">=</span>kubernetes/secrets/staging/config.ini --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<p>Now the first time we deploy the backend, we will want to disable the livenessProbe and readinessProbe. The reason is that they use data that is not yet in the database, so these checks will fail.</p>
+
+<p>One way to do this is to simply comment out the livenessProbe and readinessProbe sections of the file <code class="highlighter-rouge">kubernetes/deployments/backend.yaml</code> file and then create the backend deployment:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># create the backend deployment</span>
+kubectl create -f kubernetes/deployments/backend.yaml --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<p>Then we can execute an interactive shell on one of the backend containers. This gives us an opportunity to perform database migrations, load fixtures, create a user, etc.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>kubectl get pods --namespace<span class="o">=</span>pastely-staging
+NAME                                READY     STATUS    RESTARTS   AGE
+pastely-backend-3062118379-4m774    1/1       Running   0          10h
+pastely-backend-3062118379-kej89    1/1       Running   0          10h
+pastely-database-1888716277-6nuhm   1/1       Running   0          17h
+pastely-frontend-715571195-onwt9    1/1       Running   0          10h
+pastely-frontend-715571195-tuilp    1/1       Running   0          10h
+</code></pre>
+</div>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>kubectl <span class="nb">exec</span> -ti pastely-backend-3062118379-4m774 /bin/sh --namespace<span class="o">=</span>pastely-staging
+. venv/bin/activate
+python manage.py makemigrations --settings<span class="o">=</span>pastely.settings.staging
+python manage.py makemigrations --settings<span class="o">=</span>pastely.settings.staging paste
+python manage.py migrate --settings<span class="o">=</span>pastely.settings.staging
+python manage.py loaddata health_check --settings<span class="o">=</span>pastely.settings.staging
+python manage.py createsuperuser --settings<span class="o">=</span>pastely.settings.staging
+</code></pre>
+</div>
+
+<p>Now we can uncomment the livenessProbe and readinessProbe in <code class="highlighter-rouge">kubernetes/deployments/backend.yaml</code> and modify the deployment.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># restore the livenessProbe and readinessProbe after uncommenting them</span>
+kubectl apply -f kubernetes/deployments/backend.yaml --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<p>Finally, we can create the service for the backend.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># create the backend service so we can resolve the name 'pastely-backend' with DNS</span>
+kubectl create -f kubernetes/services/backend.yaml --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<h2 id="tocAnchor-1-10-3">Deploy the Frontend</h2>
+
+<h3 id="build-the-container">Build the Container</h3>
+
+<p>Just like before, we need to build a container for the frontend.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># build our container</span>
+docker build --build-arg<span class="o">=</span><span class="nv">deploy_environment</span><span class="o">=</span>staging --build-arg<span class="o">=</span><span class="nv">server_name</span><span class="o">=</span>pastely-staging.dewyatt.com --build-arg<span class="o">=</span><span class="nv">git_sha1</span><span class="o">=</span>49a42187c8a51eb980a98fac0ad2e633491ae586 -t gcr.io/pastely-1357/pastely-frontend:49a42187c8a51eb980a98fac0ad2e633491ae586.staging.v1 .
+<span class="c"># push it out to the Google Container Repository</span>
+gcloud docker push gcr.io/pastely-1357/pastely-frontend:49a42187c8a51eb980a98fac0ad2e633491ae586.staging.v1
+</code></pre>
+</div>
+
+<p>Then we can create the deployment and the service.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># create the deployment</span>
+kubectl create -f deploy/kubernetes/deployments/frontend.yaml --namespace<span class="o">=</span>pastely-staging
+<span class="c"># create the service</span>
+kubectl create -f deploy/kubernetes/services/frontend.yaml --namespace<span class="o">=</span>pastely-staging
+</code></pre>
+</div>
+
+<p>This time, the service type is LoadBalancer. This will create a public/external IP after a few minutes.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># check to see if the external IP is ready</span>
+kubectl get services --namespace<span class="o">=</span>pastely-staging
+NAME CLUSTER-IP EXTERNAL-IP PORT <span class="o">(</span>S<span class="o">)</span> AGE
+pastely-backend 10.115.254.142 &lt;none&gt; 8000/TCP 18h
+pastely-database 10.115.255.182 &lt;none&gt; 5432/TCP 18h
+pastely-frontend 10.115.243.24 146.148.77.173 80/TCP 18h
+</code></pre>
+</div>
+
+<p>Here we can see the frontend has an external IP address which can be accessed directly, entered into DNS, etc.</p>
+
+<h1 id="tocAnchor-1-14">Continuous Deployment with Jenkins</h1>
+
+<p>Now that everything is bootstrapped (finally!), things are much simpler.</p>
+
+<p>With newer versions of Jenkins, we can create a pipeline that will execute when a git repository is updated. You can store the pipeline script within the repository itself (a Jenkinsfile).</p>
+
+<p>For example, for the backend:</p>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="n">node</span> <span class="o">{</span>
+    <span class="n">stage</span> <span class="s1">'checkout'</span>
+    <span class="n">git</span> <span class="s1">'https://github.com/dewyatt/pastely-backend.git'</span>
+
+    <span class="n">stage</span> <span class="s1">'testing'</span>
+    <span class="n">sh</span> <span class="s1">'./deploy/test.sh'</span>
+
+    <span class="n">stage</span> <span class="s1">'build-staging'</span>
+    <span class="n">sh</span> <span class="s1">'git rev-parse HEAD | head -c 40 &gt; GIT_COMMIT'</span>
+    <span class="n">git_sha1</span><span class="o">=</span><span class="n">readFile</span><span class="o">(</span><span class="s1">'GIT_COMMIT'</span><span class="o">)</span>
+    <span class="n">sh</span> <span class="s2">"./deploy/build.sh staging $git_sha1"</span>
+
+    <span class="n">stage</span> <span class="s1">'deploy-staging'</span>
+    <span class="n">sh</span> <span class="s2">"./deploy/deploy.sh staging $git_sha1"</span>
+
+    <span class="n">deploy_prod</span><span class="o">=</span><span class="n">input</span> <span class="nl">message:</span> <span class="s1">'Deployed to staging. Do you want to deploy to production?'</span>
+    <span class="n">stage</span> <span class="s1">'build-production'</span>
+    <span class="n">sh</span> <span class="s2">"./deploy/build.sh production $git_sha1"</span>
+
+    <span class="n">stage</span> <span class="s1">'deploy-production'</span>
+    <span class="n">sh</span> <span class="s2">"./deploy/deploy.sh production $git_sha1"</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>This simply uses a couple of scripts to automatically test, build, and deploy to the staging environment when a new commit is pushed. It then prompts for approval to deploy to the production environment.</p>
+
+<p>The <code class="highlighter-rouge">build.sh</code> script builds a container just like we did above.</p>
+
+<p>The <code class="highlighter-rouge">deploy.sh</code> script uploads it to GCR and uses <code class="highlighter-rouge">kubectl patch</code> to modify the deployment with the new image target.</p>
+
+<p>Kubernetes takes care of the rest by building out new pods and terminating the old ones, all transparently without interrupting service.</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>

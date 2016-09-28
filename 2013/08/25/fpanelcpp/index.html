@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>fpanel.cpp</title>
+  <meta name="description" content="This example uses libusbx to communicate with the AVerMedia SA7001 firmware.">
+
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/toc.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
+  <link rel="canonical" href="/2013/08/25/fpanelcpp/">
+  <link rel="alternate" type="application/rss+xml" title="Daniel Wyatt" href="/feed.xml">
+
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    
+    
+    <a class="site-title" href="/">Daniel Wyatt</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        <!--
+        <a class="page-link" href="/portfolio/">Portfolio</a>
+        <a class="page-link" href="/articles/">Articles</a>
+        <a class="page-link" href="/assets/DanielWyattResume.pdf">Resume</a>
+        -->
+        
+        
+          <a class="page-link " href="/">Home</a>
+        
+          <a class="page-link " href="/portfolio/">Portfolio</a>
+        
+          <a class="page-link " href="/articles/">Articles</a>
+        
+          <a class="page-link " href="/assets/DanielWyattResume.pdf">Resume</a>
+        
+
+        
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">fpanel.cpp</h1>
+    <p class="post-meta"><time datetime="2013-08-25T13:30:56-04:00" itemprop="datePublished">Aug 25, 2013</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This example uses libusbx to communicate with the AVerMedia SA7001 firmware.</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121</pre></td><td class="code"><pre><span class="cm">/**
+* The MIT License (MIT)
+*
+* Copyright (c) 2013 Daniel Wyatt
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+**/</span>
+<span class="cm">/*
+  This code is for communicating with the stock firmware of a
+  Speco PC Pro front panel (AVerMedia SA7001).
+*/</span>
+<span class="cp">#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;cstring&gt;
+#include &lt;string&gt;
+</span>
+<span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
+<span class="cp">#include &lt;libusb.h&gt;
+</span><span class="p">}</span>
+
+<span class="cp">#define TIMEOUT_MS      10
+</span>
+<span class="cp">#define ENDPOINT_FPANEL 4
+</span>
+<span class="cp">#define REQUEST_LEDS        0xA0
+#define REQUEST_BUTTON_STATE   0xA3
+</span>
+<span class="cp">#define LED_BOTH        0
+#define LED_NETWORK     1
+#define LED_RECORDING   2
+#define LED_OFF         3
+</span>
+<span class="c1">//is the FN button active?
+</span><span class="cp">#define FLAGS_FN        (1 &lt;&lt; 7)
+</span>
+<span class="k">namespace</span> <span class="n">fpanel</span> <span class="p">{</span>
+
+<span class="cm">/* Must be called before the LCD will function */</span>
+<span class="kt">bool</span> <span class="n">init_lcd</span> <span class="p">(</span> <span class="n">libusb_device_handle</span> <span class="o">*</span><span class="n">device</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kt">uint8_t</span> <span class="n">buffer</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0xff</span><span class="p">,</span> <span class="mh">0x55</span><span class="p">,</span> <span class="mh">0xaa</span><span class="p">,</span> <span class="mh">0x55</span><span class="p">,</span> <span class="mh">0xaa</span><span class="p">,</span> <span class="mh">0x55</span><span class="p">,</span> <span class="mh">0xaa</span><span class="p">,</span> <span class="mh">0x55</span><span class="p">,</span> <span class="mh">0xaa</span><span class="p">};</span>
+    <span class="kt">int</span> <span class="n">bytes</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">libusb_bulk_transfer</span> <span class="p">(</span> <span class="n">device</span><span class="p">,</span> <span class="n">ENDPOINT_FPANEL</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span>
+        <span class="o">&amp;</span><span class="n">bytes</span><span class="p">,</span> <span class="n">TIMEOUT_MS</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Write string to LCD.
+    line: 0 or 1
+    s:    maximum 8 chars
+*/</span>
+<span class="kt">bool</span> <span class="n">write_lcd</span> <span class="p">(</span> <span class="n">libusb_device_handle</span> <span class="o">*</span><span class="n">device</span><span class="p">,</span> <span class="kt">int</span> <span class="n">line</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">text</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">strlen</span> <span class="p">(</span> <span class="n">s</span> <span class="p">);</span>
+    <span class="n">memcpy</span> <span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">length</span> <span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">length</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span>
+        <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sc">' '</span><span class="p">;</span>
+
+    <span class="kt">uint8_t</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+    <span class="n">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">;</span>
+    <span class="n">memcpy</span> <span class="p">(</span> <span class="o">&amp;</span><span class="n">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">8</span> <span class="p">);</span>
+    <span class="kt">int</span> <span class="n">bytes</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">libusb_bulk_transfer</span> <span class="p">(</span> <span class="n">device</span><span class="p">,</span> <span class="n">ENDPOINT_FPANEL</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="o">&amp;</span><span class="n">bytes</span><span class="p">,</span> <span class="n">TIMEOUT_MS</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* set the recording and network LED states */</span>
+<span class="kt">bool</span> <span class="n">set_leds</span> <span class="p">(</span> <span class="n">libusb_device_handle</span> <span class="o">*</span><span class="n">device</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">recording</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">network</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">wval</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">-</span> <span class="p">(</span> <span class="n">recording</span> <span class="o">?</span> <span class="n">LED_RECORDING</span> <span class="o">:</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">-</span> <span class="p">(</span> <span class="n">network</span> <span class="o">?</span> <span class="n">LED_NETWORK</span> <span class="o">:</span> <span class="mi">0</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="o">!=</span> <span class="n">libusb_control_transfer</span> <span class="p">(</span> <span class="n">device</span><span class="p">,</span>
+        <span class="n">LIBUSB_REQUEST_TYPE_CLASS</span>
+        <span class="o">|</span> <span class="n">LIBUSB_RECIPIENT_INTERFACE</span>
+        <span class="o">|</span> <span class="n">LIBUSB_ENDPOINT_OUT</span><span class="p">,</span>
+    <span class="n">REQUEST_LEDS</span><span class="p">,</span>
+    <span class="n">wval</span><span class="p">,</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="s">"</span><span class="se">\x00</span><span class="s">"</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="n">TIMEOUT_MS</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+    Poll the buttons state.
+    button: button pressed or 0xff if none (0 = button released)
+    fn:     state of the FN button
+*/</span>
+<span class="kt">bool</span> <span class="n">poll_buttons</span> <span class="p">(</span> <span class="n">libusb_device_handle</span> <span class="o">*</span><span class="n">device</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">&amp;</span><span class="n">button</span><span class="p">,</span> <span class="kt">bool</span> <span class="o">&amp;</span><span class="n">fn</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kt">uint8_t</span> <span class="n">state</span><span class="p">[</span><span class="mi">11</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">libusb_control_transfer</span> <span class="p">(</span> <span class="n">device</span><span class="p">,</span>
+        <span class="n">LIBUSB_REQUEST_TYPE_CLASS</span>
+        <span class="o">|</span> <span class="n">LIBUSB_RECIPIENT_INTERFACE</span>
+        <span class="o">|</span> <span class="n">LIBUSB_ENDPOINT_IN</span><span class="p">,</span>
+    <span class="n">REQUEST_BUTTON_STATE</span><span class="p">,</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="n">state</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">,</span>
+    <span class="n">TIMEOUT_MS</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+
+    <span class="n">button</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">FLAGS_FN</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">}</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Daniel Wyatt
+            
+            </li>
+          <li><a href="mailto:&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#68;&#97;&#110;&#105;&#101;&#108;&#46;&#87;&#121;&#97;&#116;&#116;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/"><span class="icon-github-circled" style="color: #828282;"></span><span class="username">dewyatt</span></a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>DevOps Professional, Cloud Engineer, Embedded Enthusiast.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+
+    <script src="/js/lightbox.min.js"></script>
+    <script>
+      var options = {
+        carousel:     false,
+        closeOnClick: true,
+        nextOnClick:  false
+      };
+      var lightbox = new Lightbox();
+      lightbox.load(options);
+    </script>
+  </body>
+
+</html>
