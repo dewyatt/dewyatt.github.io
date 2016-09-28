@@ -6,8 +6,8 @@
 </description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 28 Sep 2016 01:39:49 -0400</pubDate>
-    <lastBuildDate>Wed, 28 Sep 2016 01:39:49 -0400</lastBuildDate>
+    <pubDate>Wed, 28 Sep 2016 02:30:13 -0400</pubDate>
+    <lastBuildDate>Wed, 28 Sep 2016 02:30:13 -0400</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -136,12 +136,14 @@ It will boot up and run some cloud-init routines and then reboot.&lt;/p&gt;
 
 &lt;p&gt;&lt;img class=&quot;jslghtbx-thmb&quot; src=&quot;/assets/images/50t.png&quot; data-jslghtbx=&quot;/assets/images/50.png&quot; data-jslghtbx-group=&quot;maas_modify_boot_options&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Now let’s check back in to the web interface of the region/rack controller. You’ll find a new node under the Nodes section. It will have a random name, which you may want to change as I did here:
-&lt;img class=&quot;jslghtbx-thmb&quot; src=&quot;/assets/images/51t.png&quot; data-jslghtbx=&quot;/assets/images/51.png&quot; data-jslghtbx-group=&quot;maas_node_add&quot; /&gt;
+&lt;p&gt;Now let’s check back in to the web interface of the region/rack controller. You’ll find a new node under the Nodes section. It will have a random name, which you may want to change as I did here:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;jslghtbx-thmb&quot; src=&quot;/assets/images/51t.png&quot; data-jslghtbx=&quot;/assets/images/51.png&quot; data-jslghtbx-group=&quot;maas_node_add&quot; /&gt;
         &lt;img class=&quot;jslghtbx-thmb&quot; src=&quot;/assets/images/52t.png&quot; data-jslghtbx=&quot;/assets/images/52.png&quot; data-jslghtbx-group=&quot;maas_node_add&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;On this same page, we will want to scroll down and set up the power control for this node:
-&lt;img class=&quot;jslghtbx-thmb&quot; src=&quot;/assets/images/53t.png&quot; data-jslghtbx=&quot;/assets/images/53.png&quot; data-jslghtbx-group=&quot;maas_node_power&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;On this same page, we will want to scroll down and set up the power control for this node:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;jslghtbx-thmb&quot; src=&quot;/assets/images/53t.png&quot; data-jslghtbx=&quot;/assets/images/53.png&quot; data-jslghtbx-group=&quot;maas_node_power&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The “Power address” I used here was &lt;code class=&quot;highlighter-rouge&quot;&gt;qemu+ssh://&amp;lt;USERNAME_ON_HOST&amp;gt;==&lt;/code&gt;==192.168.100.1/system list@.&lt;/p&gt;
 
