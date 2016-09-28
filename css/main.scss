@@ -69,9 +69,9 @@ table, table td, table th {
     border: 2px solid gray;
   }
   .project {
-    background-color: #eee;
+    background-color: $grey-color-light;
+    border: 1px solid $grey-color-dark;
     padding: 15px 10px;
-    border: 1px solid #ccc;
     border-radius: 8px;
     margin-bottom: 10px;
     overflow: hidden;
@@ -116,7 +116,7 @@ a.page-link {
 }
 
 a.page-link.active {
-  background-color: #eee;
+  background-color: $grey-color-light;
 }
 
 a.view-my-resume {
@@ -125,5 +125,6 @@ a.view-my-resume {
   background-color: $grey-color-light;
   border: 1px solid $grey-color-dark;
   padding: 5px 10px;
+  color: $grey-color-dark;
 }
 
