@@ -103,9 +103,11 @@ To fix things back up, force the VM off and modify the boot options:
 {% img maas_modify_boot_options 50.png|50t.png %}
 
 Now let's check back in to the web interface of the region/rack controller. You'll find a new node under the Nodes section. It will have a random name, which you may want to change as I did here:
+
 {% img maas_node_add 51.png|51t.png 52.png|52t.png %}
 
 On this same page, we will want to scroll down and set up the power control for this node:
+
 {% img maas_node_power 53.png|53t.png %}
 
 The "Power address" I used here was `qemu+ssh://<USERNAME_ON_HOST>==`==192.168.100.1/system list@.
