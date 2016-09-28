@@ -1,0 +1,10 @@
+---
+- title: Home
+  url: /
+- title: Portfolio
+  url: /portfolio/
+- title: Articles
+  url: /articles/
+- title: Resume
+  url: /assets/DanielWyattResume.pdf
+---
