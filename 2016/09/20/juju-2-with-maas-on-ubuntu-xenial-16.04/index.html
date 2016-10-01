@@ -223,8 +223,8 @@ We will use a single physical host with a few KVM virtual machines that will ser
   <li>Install required libvirt client software: <code class="highlighter-rouge">sudo apt install libvirt-bin</code></li>
   <li>Become the ‘maas’ user: <code class="highlighter-rouge">sudo su -ls /bin/bash maas</code></li>
   <li>Create a key pair: <code class="highlighter-rouge">ssh-keygen -f /var/lib/maas/.ssh/id_rsa -qN ''</code></li>
-  <li>Copy the public key to the host system: <code class="highlighter-rouge">ssh-copy-id &lt;USERNAME_ON_HOST&gt;==</code>192.168.100.1@
-# Verify that things are working: @virsh -c qemu+ssh://&lt;USERNAME_ON_HOST&gt;<code class="highlighter-rouge">==192.168.100.1/system list</code></li>
+  <li>Copy the public key to the host system: <code class="highlighter-rouge">ssh-copy-id &lt;USERNAME_ON_HOST&gt;@192.168.100.1</code></li>
+  <li>Verify that things are working: <code class="highlighter-rouge">virsh -c qemu+ssh://&lt;USERNAME_ON_HOST&gt;@192.168.100.1/system list</code></li>
 </ol>
 
 <h2 id="tocAnchor-1-2-6">Set Up MAAS Nodes</h2>
@@ -265,7 +265,7 @@ It will boot up and run some cloud-init routines and then reboot.</p>
   <img class="jslghtbx-thmb" src="/assets/images/53t.png" data-jslghtbx="/assets/images/53.png" data-jslghtbx-group="maas_node_power" />
 </p>
 
-<p>The “Power address” I used here was <code class="highlighter-rouge">qemu+ssh://&lt;USERNAME_ON_HOST&gt;==</code>==192.168.100.1/system list@.</p>
+<p>The “Power address” I used here was <code class="highlighter-rouge">qemu+ssh://&lt;USERNAME_ON_HOST&gt;@192.168.100.1/system</code>.</p>
 
 <p>Finally, we will want to ‘commission’ the node. This will power the VM up, network boot it, and gather information about the node (CPU core count, RAM, etc). It will then power down the node.</p>
 
