@@ -20,6 +20,13 @@ $grey-color:       #828282;
 $grey-color-light: lighten($grey-color, 40%);
 $grey-color-dark:  darken($grey-color, 25%);
 
+$maroon-color:        #a02c2c;
+$maroon-color-light:  #b43232;
+$maroon-color-dark:   #641c1c;
+// reg gradient: linear-gradient(#b43232, #a02c2c)
+// lgt gradient: linear-gradient(#ce4b4b, #c83737)
+// grey complement: #9e9ea0
+
 // Width of the content area
 $content-width:    1024px;
 
@@ -122,10 +129,11 @@ a.page-link.active {
 a.view-my-resume {
   -moz-border-radius: .35714285714286em;
   border-radius: .35714285714286em;
-  background-color: $grey-color-light;
   border: 1px solid $grey-color-dark;
   padding: 5px 10px;
-  color: $grey-color-dark;
+  background-color: $maroon-color-light;
+  border: solid 1px $maroon-color-dark;
+  color: #fff;
 }
 
 .site-header {
