@@ -11,7 +11,7 @@ dl, dd, ol, ul, figure {
  * Basic styling
  */
 body {
-  font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 400 16px/1.5 "Vollkorn", serif;
   color: #111;
   background-color: #fdfdfd;
   -webkit-text-size-adjust: 100%;
@@ -460,6 +460,10 @@ table, table td, table th {
 .jslghtbx-thmb {
   margin: 0.2em !important; }
 
+h1, h2, h3, h4, h5, h6 {
+  color: #b43232;
+  font-family: 'Unica One', cursive; }
+
 @media screen {
   .note {
     margin: .875em 0 .875em 0;
@@ -520,7 +524,11 @@ a.page-link.active {
 a.view-my-resume {
   -moz-border-radius: .35714285714286em;
   border-radius: .35714285714286em;
-  background-color: #e8e8e8;
   border: 1px solid #424242;
   padding: 5px 10px;
-  color: #424242; }
+  background-color: #b43232;
+  border: solid 1px #641c1c;
+  color: #fff; }
+
+.site-header {
+  border-top: none !important; }
