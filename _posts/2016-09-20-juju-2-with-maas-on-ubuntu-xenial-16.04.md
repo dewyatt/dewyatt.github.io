@@ -76,12 +76,12 @@ Setup libvirt Access on MAAS Controller
 
 We want the MAAS controller/master to be able to start and stop VMs on the host. To accomplish this, we will need to install a package and setup public key auth from the MAAS Region Controller to the VM host it runs on.
 
-1.  SSH to maas-master (192.168.100.2).
-2.  Install required libvirt client software: `sudo apt install libvirt-bin`
-3.  Become the 'maas' user: `sudo su -ls /bin/bash maas`
-4.  Create a key pair: `ssh-keygen -f /var/lib/maas/.ssh/id_rsa -qN ''`
-5.  Copy the public key to the host system: `ssh-copy-id <USERNAME_ON_HOST>==`192.168.100.1@
-    \# Verify that things are working: @virsh -c qemu+ssh://&lt;USERNAME\_ON\_HOST&gt;`==192.168.100.1/system list`
+1. SSH to maas-master (192.168.100.2).
+2. Install required libvirt client software: `sudo apt install libvirt-bin`
+3. Become the 'maas' user: `sudo su -ls /bin/bash maas`
+4. Create a key pair: `ssh-keygen -f /var/lib/maas/.ssh/id_rsa -qN ''`
+5. Copy the public key to the host system: `ssh-copy-id <USERNAME_ON_HOST>@192.168.100.1`
+6. Verify that things are working: `virsh -c qemu+ssh://<USERNAME_ON_HOST>@192.168.100.1/system list`
 
 Set Up MAAS Nodes
 -----------------
@@ -110,7 +110,7 @@ On this same page, we will want to scroll down and set up the power control for 
 
 {% img maas_node_power 53.png|53t.png %}
 
-The "Power address" I used here was `qemu+ssh://<USERNAME_ON_HOST>==`==192.168.100.1/system list@.
+The "Power address" I used here was `qemu+ssh://<USERNAME_ON_HOST>@192.168.100.1/system`.
 
 Finally, we will want to 'commission' the node. This will power the VM up, network boot it, and gather information about the node (CPU core count, RAM, etc). It will then power down the node.
 
