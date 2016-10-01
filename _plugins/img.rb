@@ -18,7 +18,9 @@ module Jekyll
 
     def render(context)
       out = ''
-      @items.each {|item|
+      groupsize = @items.size
+
+      @items.each_with_index {|item,idx|
         @image, @thumb = item.split('|')
         @image = Liquid::Template.parse(@image).render context
         if @thumb == nil
@@ -27,10 +29,16 @@ module Jekyll
           @thumb = Liquid::Template.parse(@thumb).render context
         end
 
+        style = ''
+        if idx != 0
+          style = 'display: none'
+        end
         out += %{<img class="jslghtbx-thmb"
                src="/assets/images/#{@thumb}"
                data-jslghtbx="/assets/images/#{@image}"
-               data-jslghtbx-group="#{@group}" />
+               data-jslghtbx-group="#{@group}"
+               data-jslghtbx-caption="#{idx+1}/#{groupsize}"
+               style="#{style}" />
         }
       }
       return out
