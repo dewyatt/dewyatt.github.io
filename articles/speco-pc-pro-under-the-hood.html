@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/css/toc.css">
   <link rel="stylesheet" href="/css/lightbox.css">
   <link rel="stylesheet" href="/assets/fontello/css/fontello.css">
-  <link rel="canonical" href="/2013/07/18/speco-pc-pro-under-the-hood/">
+  <link rel="canonical" href="/articles/speco-pc-pro-under-the-hood">
   <link href="https://fonts.googleapis.com/css?family=Unica+One|Vollkorn" rel="stylesheet">
 
 </head>
@@ -263,7 +263,7 @@ A quick examination revealed there was a BULK endpoint which took a format like 
 </p>
 
 <p>For the LEDs I had to step through DVR.exe until I saw one of the LEDs change state and then review the USB traffic.
-I won’t go into details here as the <a href="/2013/08/25/fpanelcpp/">source code</a> later on speaks for itself.
+I won’t go into details here as the <a href="/articles/fpanelcpp">source code</a> later on speaks for itself.
 Now I knew something of the protocol used to communicate.
 However, I wanted to be able to do this in Linux.
 That required loading the firmware blob in Linux.</p>
@@ -305,7 +305,7 @@ However, only one wanted to work for me: <a href="http://www.triplespark.net/ele
 <h1 id="tocAnchor-1-8">Communicating with the firmware</h1>
 
 <p>Now that I had the firmware loaded in Linux, I wanted to communicate with it!
-The example, using libusbx, is <a href="/2013/08/25/fpanelcpp/">here.</a>
+The example, using libusbx, is <a href="/articles/fpanelcpp">here.</a>
 It supports the buttons, LCD, and LEDs.
 I don’t have the remote control for the DVR so I can’t test the IR functionality.
 It may be that the IR input is in the 11-byte USB control IN transfer, I don’t know.</p>
