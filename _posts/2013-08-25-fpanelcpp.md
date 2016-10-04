@@ -2,6 +2,7 @@
 layout: post
 title: fpanel.cpp
 date: 2013-08-25 13:30:56 -0400
+categories: articles
 visible: false
 ---
 

@@ -2,6 +2,7 @@
 layout: post
 title: CoreOS local cluster in QEMU on Arch Linux
 date: 2016-07-26 12:55:52 -0400
+categories: articles
 ---
 
 Introduction

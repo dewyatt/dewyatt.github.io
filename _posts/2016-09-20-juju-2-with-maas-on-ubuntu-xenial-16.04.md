@@ -2,6 +2,7 @@
 layout: post
 title: JuJu 2 with MAAS on Ubuntu Xenial 16.04
 date: 2016-09-20 02:04:56 -0400
+categories: articles
 ---
 
 Introduction

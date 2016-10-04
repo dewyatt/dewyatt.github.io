@@ -2,6 +2,7 @@
 layout: post
 title: "\"Initializing audio\" or \"Audio init failed\" on Blackboard in Linux"
 date: 2013-11-06 12:20:21 -0400
+categories: articles
 ---
 
 Introduction

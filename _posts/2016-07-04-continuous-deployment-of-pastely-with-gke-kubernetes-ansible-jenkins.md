@@ -2,6 +2,7 @@
 layout: post
 title: Continuous Deployment of Pastely with GKE/Kubernetes, Ansible, and Jenkins
 date: 2016-07-04 04:05:12 -0400
+categories: articles
 ---
 
 Introduction

@@ -2,6 +2,7 @@
 layout: post
 title: Speco PC Pro Front Panel HID Firmware
 date: 2013-08-19 13:16:38 -0400
+categories: articles
 ---
 
 Introduction

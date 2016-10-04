@@ -2,7 +2,7 @@
 layout: post
 title: Seagate External Drive LEDs in Linux
 date: 2013-06-28 15:00:00 -0400
-#categories: jekyll update
+categories: articles
 ---
 
 <span class="note">

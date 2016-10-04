@@ -2,6 +2,7 @@
 layout: post
 title: RHEL 7 authconfig complaints
 date: 2016-03-09 12:40:55 -0400
+categories: articles
 ---
 The authconfig suite on RHEL 7 is commonly used to configure network authentication and authorization. In my case, I wanted LDAP authorization and Kerberos authentication.
 

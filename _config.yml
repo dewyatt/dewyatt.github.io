@@ -10,7 +10,7 @@ github_username:  dewyatt
 markdown: kramdown
 theme: minima
 
-permalink: pretty
+permalink: /:categories/:title
 
 gems:
 - nokogiri

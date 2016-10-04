@@ -2,6 +2,7 @@
 layout: post
 title: Speco PC Pro (Under the Hood)
 date: 2013-07-18 07:25:55 -0400
+categories: articles
 ---
 
 Introduction
