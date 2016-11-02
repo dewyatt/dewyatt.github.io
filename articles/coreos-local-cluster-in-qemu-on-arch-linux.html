@@ -77,7 +77,58 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <h2 id="introduction">Introduction</h2>
+    <div id="toc-container">
+  <table class="toc" id="toc">
+    <tbody>
+      <tr>
+        <td>
+          <div id="toctitle">
+            <h2>Contents</h2>
+          </div>
+          <ul>
+            <li class="toc_level-1 toc_section-1">
+              <a href="#tocAnchor-1-1"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-2">
+              <a href="#tocAnchor-1-2"><span class="tocnumber">2</span> <span class="toctext">Set up the Network Boot Server</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-3">
+                  <a href="#tocAnchor-1-2-1"><span class="tocnumber">2.1</span> <span class="toctext">Set up TFTP</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-4">
+                  <a href="#tocAnchor-1-2-2"><span class="tocnumber">2.2</span> <span class="toctext">Configure PXELINUX</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-5">
+              <a href="#tocAnchor-1-5"><span class="tocnumber">3</span> <span class="toctext">Set up the Virtual Machine Host</span></a>
+              <ul>
+                <li class="toc_level-2 toc_section-6">
+                  <a href="#tocAnchor-1-5-1"><span class="tocnumber">3.1</span> <span class="toctext">Set up nginx</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-7">
+                  <a href="#tocAnchor-1-5-2"><span class="tocnumber">3.2</span> <span class="toctext">Create a Bridge</span></a>
+                </li>
+                <li class="toc_level-2 toc_section-8">
+                  <a href="#tocAnchor-1-5-3"><span class="tocnumber">3.3</span> <span class="toctext">Enable KSM (Optional)</span></a>
+                </li>
+              </ul>
+            </li>
+            <li class="toc_level-1 toc_section-9">
+              <a href="#tocAnchor-1-9"><span class="tocnumber">4</span> <span class="toctext">Create a Cloudinit Template</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-10">
+              <a href="#tocAnchor-1-10"><span class="tocnumber">5</span> <span class="toctext">Start the Cluster</span></a>
+            </li>
+            <li class="toc_level-1 toc_section-11">
+              <a href="#tocAnchor-1-11"><span class="tocnumber">6</span> <span class="toctext">Confirm Functionality</span></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div><h1 id="tocAnchor-1-1">Introduction</h1>
 
 <p>CoreOS is a lightweight Linux-based OS for clustered deployments of containers. It can stand on its own but also works well with higher-level tools like Kubernetes.</p>
 
@@ -87,13 +138,13 @@
 
 <p>I have tested this with QEMU version 2.6.0.</p>
 
-<h2 id="set-up-the-network-boot-server">Set up the Network Boot Server</h2>
+<h1 id="tocAnchor-1-2">Set up the Network Boot Server</h1>
 
 <p>First, go configure your DHCP server to hand out the appropriate next-server IP and filename. If you’re using pfSense, for example, you may find settings called “Next Server” (example: 192.168.5.243) and “Default BIOS file name” (pxelinux.0) under the Services-&gt;DHCP Server web interface page.</p>
 
 <p>Now we will need a TFTP server.</p>
 
-<h3 id="set-up-tftp">Set up TFTP</h3>
+<h2 id="tocAnchor-1-2-1">Set up TFTP</h2>
 
 <p>Here, we will:</p>
 
@@ -119,7 +170,7 @@ wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe_
 </code></pre>
 </div>
 
-<h3 id="configure-pxelinux">Configure PXELINUX</h3>
+<h2 id="tocAnchor-1-2-2">Configure PXELINUX</h2>
 
 <p>Now we can create the pxelinux configuration. Note that we are passing the cloud-config-url kernel parameter.</p>
 
@@ -139,9 +190,9 @@ label coreos
 </code></pre>
 </div>
 
-<h2 id="set-up-the-virtual-machine-host">Set up the Virtual Machine Host</h2>
+<h1 id="tocAnchor-1-5">Set up the Virtual Machine Host</h1>
 
-<h3 id="set-up-nginx">Set up nginx</h3>
+<h2 id="tocAnchor-1-5-1">Set up nginx</h2>
 
 <p>Now let’s install nginx on the archvmhost server to serve up the coreos-cloud-config.yaml file. The reason we are doing this is so that nginx can replace the $public_ipv4 placeholder in the coreos-cloud-config.yaml file with the remote client’s IP address when it requests it over HTTP.</p>
 
@@ -202,7 +253,7 @@ systemctl start nginx
 </code></pre>
 </div>
 
-<h3 id="create-a-bridge">Create a Bridge</h3>
+<h2 id="tocAnchor-1-5-2">Create a Bridge</h2>
 
 <p>In my case I want these systems on the same network segment as the host, so I’m going to create a bridge and then let QEMU create the tap device.</p>
 
@@ -254,7 +305,7 @@ systemctl enable systemd-networkd
 </code></pre>
 </div>
 
-<h3 id="enable-ksm-optional">Enable KSM (Optional)</h3>
+<h2 id="tocAnchor-1-5-3">Enable KSM (Optional)</h2>
 
 <p>We can use <a href="http://www.linux-kvm.org/page/KSM">Kernel Samepage Merging</a> to save on memory consumption. You can search the QEMU source for MADV_MERGEABLE to get an idea of what memory is shared.</p>
 
@@ -285,6 +336,7 @@ systemctl enable systemd-networkd
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
+<![CDATA[
   google.charts.load('current', {'packages':['corechart']});
   google.charts.setOnLoadCallback(drawChart);
 
@@ -325,15 +377,18 @@ systemctl enable systemd-networkd
 
     chart.draw(data, options);
   }
+]]>
 </script>
 
-<h2 id="create-a-cloudinit-template">Create a Cloudinit Template</h2>
+<h1 id="tocAnchor-1-9">Create a Cloudinit Template</h1>
 
 <p>Finally we can create our cloudinit config template. I say template because we are going to put in a placeholder for <code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> that a script will replace when run.</p>
 
 <p>You will want to substitute your own public key here for SSH access (username ‘core’). Or you could create a separate user as documented in the CoreOS cloudinit docs.</p>
 
-<p><code class="highlighter-rouge">coreos-cloud-config.yaml.template</code></p>
+<p>
+  <code class="highlighter-rouge">coreos-cloud-config.yaml.template</code>
+</p>
 
 <div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="c1">#cloud-config</span>
 <span class="s">ssh_authorized_keys</span><span class="pi">:</span>
@@ -359,7 +414,7 @@ systemctl enable systemd-networkd
 
 <p>Because of this, we put in a placeholder that our script will substitute after dynamically allocating a new discovery URL during invocation.</p>
 
-<h2 id="start-the-cluster">Start the Cluster</h2>
+<h1 id="tocAnchor-1-10">Start the Cluster</h1>
 
 <p>First, we need qemu:</p>
 
@@ -369,7 +424,9 @@ systemctl enable systemd-networkd
 
 <p>Then, we’ll put a little script together:</p>
 
-<p><code class="highlighter-rouge">start_coreos_cluster.sh</code></p>
+<p>
+  <code class="highlighter-rouge">start_coreos_cluster.sh</code>
+</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 <span class="nb">set</span> -eu -o pipefail
@@ -460,7 +517,7 @@ sed <span class="s2">"s|&lt;DISCOVERY_URL&gt;|</span><span class="nv">$discovery
   </tbody>
 </table>
 
-<h2 id="confirm-functionality">Confirm Functionality</h2>
+<h1 id="tocAnchor-1-11">Confirm Functionality</h1>
 
 <p>There are a few items to check that the cluster is healthy.</p>
 
