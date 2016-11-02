@@ -6,7 +6,7 @@ categories: articles
 ---
 
 Introduction
-------------
+============
 
 CoreOS is a lightweight Linux-based OS for clustered deployments of containers. It can stand on its own but also works well with higher-level tools like Kubernetes.
 
@@ -17,13 +17,13 @@ The server named archpxe will provide TFTP. The server named archvmhost will pro
 I have tested this with QEMU version 2.6.0.
 
 Set up the Network Boot Server
-------------------------------
+==============================
 
 First, go configure your DHCP server to hand out the appropriate next-server IP and filename. If you're using pfSense, for example, you may find settings called "Next Server" (example: 192.168.5.243) and "Default BIOS file name" (pxelinux.0) under the Services-&gt;DHCP Server web interface page.
 
 Now we will need a TFTP server.
 
-### Set up TFTP
+## Set up TFTP
 
 Here, we will:
 
@@ -47,7 +47,7 @@ wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe.
 wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe_image.cpio.gz
 ```
 
-### Configure PXELINUX
+## Configure PXELINUX
 
 Now we can create the pxelinux configuration. Note that we are passing the cloud-config-url kernel parameter.
 
@@ -68,9 +68,9 @@ label coreos
 ```
 
 Set up the Virtual Machine Host
--------------------------------
+===============================
 
-### Set up nginx
+## Set up nginx
 
 Now let's install nginx on the archvmhost server to serve up the coreos-cloud-config.yaml file. The reason we are doing this is so that nginx can replace the $public_ipv4 placeholder in the coreos-cloud-config.yaml file with the remote client's IP address when it requests it over HTTP.
 
@@ -131,7 +131,7 @@ systemctl enable nginx
 systemctl start nginx
 ```
 
-### Create a Bridge
+## Create a Bridge
 
 In my case I want these systems on the same network segment as the host, so I'm going to create a bridge and then let QEMU create the tap device.
 
@@ -183,7 +183,7 @@ mkdir -p /etc/qemu
 echo 'allow br0' >> /etc/qemu/bridge.conf
 ```
 
-### Enable KSM (Optional)
+## Enable KSM (Optional)
 
 We can use [Kernel Samepage Merging](http://www.linux-kvm.org/page/KSM) to save on memory consumption. You can search the QEMU source for MADV_MERGEABLE to get an idea of what memory is shared.
 
@@ -256,7 +256,7 @@ For me this was ~219MiB. The chart below demonstrates that we have steeper memor
 </script>
 
 Create a Cloudinit Template
----------------------------
+===========================
 
 Finally we can create our cloudinit config template. I say template because we are going to put in a placeholder for `<DISCOVERY_URL>` that a script will replace when run.
 
@@ -289,7 +289,7 @@ coreos:
 Because of this, we put in a placeholder that our script will substitute after dynamically allocating a new discovery URL during invocation.
 
 Start the Cluster
------------------
+=================
 
 First, we need qemu:
 
@@ -364,7 +364,7 @@ There are also a few settings up at the top of the script:
 | BRIDGE_NAME       | br0     | Name of the network bridge device          |
 
 Confirm Functionality
----------------------
+=====================
 
 There are a few items to check that the cluster is healthy.
 
