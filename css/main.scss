@@ -144,3 +144,12 @@ a.view-my-resume {
 .site-header {
   border-top: none !important;
 }
+
+.post-content {
+  h1 {
+    font-size: 42px;
+    @include media-query($on-laptop) {
+      font-size: 36px;
+    }
+  }
+}
