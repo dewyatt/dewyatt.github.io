@@ -43,8 +43,8 @@ cp /usr/lib/syslinux/bios/ldlinux.c32 /srv/tftp/
 
 pacman -S wget
 cd /srv/tftp
-wget https://stable.release.core-os.net/amd64-usr/current/coreos\_production\_pxe.vmlinuz
-wget https://stable.release.core-os.net/amd64-usr/current/coreos\_production\_pxe\_image.cpio.gz
+wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe.vmlinuz
+wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe_image.cpio.gz
 ```
 
 ### Configure PXELINUX
@@ -72,7 +72,7 @@ Set up the Virtual Machine Host
 
 ### Set up nginx
 
-Now let's install nginx on the archvmhost server to serve up the coreos-cloud-config.yaml file. The reason we are doing this is so that nginx can replace the $public\_ipv4 placeholder in the coreos-cloud-config.yaml file with the remote client's IP address when it requests it over HTTP.
+Now let's install nginx on the archvmhost server to serve up the coreos-cloud-config.yaml file. The reason we are doing this is so that nginx can replace the $public_ipv4 placeholder in the coreos-cloud-config.yaml file with the remote client's IP address when it requests it over HTTP.
 
 First, install nginx:
 
@@ -120,9 +120,9 @@ http {
 }
 ```
 
-Here I'm only adding support for the $private\_ipv4 substitution. In my case this is all on a local network so $remote\_addr is an appropriate value to substitute. The $dollar variable is necessary to avoid nginx's variable substitution here, it's an ugly workaround but it works.
+Here I'm only adding support for the $private_ipv4 substitution. In my case this is all on a local network so $remote_addr is an appropriate value to substitute. The $dollar variable is necessary to avoid nginx's variable substitution here, it's an ugly workaround but it works.
 
-So what we've done here is configured nginx to replace any occurrences of $private\_ipv4 in the requested file /coreos-cloud-config.yaml, with the IP address of the remote system ($remote\_addr). If the file /srv/http/coreos-cloud-config.yaml contained 'Your IP is: $private\_ipv4', then you could use curl/etc on another system and get a response saying 'Your IP is: 192.168.5.100', for example.
+So what we've done here is configured nginx to replace any occurrences of $private_ipv4 in the requested file /coreos-cloud-config.yaml, with the IP address of the remote system ($remote_addr). If the file /srv/http/coreos-cloud-config.yaml contained 'Your IP is: $private_ipv4', then you could use curl/etc on another system and get a response saying 'Your IP is: 192.168.5.100', for example.
 
 Now we can enable and start nginx.
 
@@ -185,7 +185,7 @@ echo 'allow br0' >> /etc/qemu/bridge.conf
 
 ### Enable KSM (Optional)
 
-We can use [Kernel Samepage Merging](http://www.linux-kvm.org/page/KSM) to save on memory consumption. You can search the QEMU source for MADV\_MERGEABLE to get an idea of what memory is shared.
+We can use [Kernel Samepage Merging](http://www.linux-kvm.org/page/KSM) to save on memory consumption. You can search the QEMU source for MADV_MERGEABLE to get an idea of what memory is shared.
 
 ```bash
 # Enable KSM
@@ -358,10 +358,10 @@ There are also a few settings up at the top of the script:
 
 | variable           | default | description                                |
 |--------------------|---------|--------------------------------------------|
-| STAGGER\_TIME\_SEC | 1.0     | Time, in seconds, between starting each VM |
-| VM\_MEMORY\_MB     | 1024    | Amount of memory for each VM in MiB        |
-| VM\_CORES          | 1       | Number of processor cores for each VM      |
-| BRIDGE\_NAME       | br0     | Name of the network bridge device          |
+| STAGGER_TIME_SEC | 1.0     | Time, in seconds, between starting each VM |
+| VM_MEMORY_MB     | 1024    | Amount of memory for each VM in MiB        |
+| VM_CORES          | 1       | Number of processor cores for each VM      |
+| BRIDGE_NAME       | br0     | Name of the network bridge device          |
 
 Confirm Functionality
 ---------------------
