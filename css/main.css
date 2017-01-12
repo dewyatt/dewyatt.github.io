@@ -538,3 +538,6 @@ a.view-my-resume {
   @media screen and (max-width: 1024px) {
     .post-content h1 {
       font-size: 36px; } }
+
+.site-title {
+  float: none !important; }
