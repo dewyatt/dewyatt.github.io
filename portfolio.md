@@ -4,7 +4,7 @@ title: Portfolio
 permalink: /portfolio/
 ---
 
-Projects
+Open-Source Projects
 ========
 
 {% for project in site.data.portfolio.projects %}
