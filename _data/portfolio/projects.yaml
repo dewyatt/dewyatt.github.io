@@ -1,4 +1,22 @@
 ---
+- name: Bitsee
+  description: 'Ruby on Rails bitcoin blockchain embedded data extractor/viewer.'
+  image: 58.png
+  thumbnail: 58t.png
+  links:
+    - name: github
+      url: https://github.com/dewyatt/bitsee
+      icon: github-circled
+
+- name: jnumjs
+  description: 'A simple Javascript library to convert Arabic numerals to Japanese Kana/Kanji.'
+  image: 57.png
+  thumbnail: 57t.png
+  links:
+    - name: github
+      url: https://github.com/dewyatt/jnumjs
+      icon: github-circled
+
 - name: Pastely
   description: 'Pastely is an online code paste service using React, Django, Ansible, Docker, and Kubernetes. Note: Limited browser support due to the use of CSS flexbox.'
   image: 26.png
