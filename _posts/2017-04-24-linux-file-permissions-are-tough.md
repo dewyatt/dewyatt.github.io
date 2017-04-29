@@ -150,8 +150,8 @@ Progress! This time we can see that ping is being executed, but it is encounteri
 Sources
 ----------------
 
-* `man acl` (package acl)
-* `man setfacl` (package acl)
+* `man 5 acl` (package acl)
+* `man 1 setfacl` (package acl)
 
 Capabilities
 ============
