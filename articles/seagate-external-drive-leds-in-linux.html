@@ -73,7 +73,7 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">Seagate External Drive LEDs in Linux</h1>
-    <p class="post-meta"><time datetime="2013-06-28T15:00:00-04:00" itemprop="datePublished">Jun 28, 2013</time></p>
+    <p class="post-meta"><time datetime="2013-06-28T14:00:00-05:00" itemprop="datePublished">Jun 28, 2013</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
@@ -216,22 +216,27 @@ The only partition I had was an ext4 partition so I was glad to see Seagate Dash
 <p><a href="http://www.kernel.org/doc/Documentation/usb/usbmon.txt">usbmon</a> is a linux module that enables the capture of I/O traces on the USB bus. I’ll use <a href="http://www.wireshark.org">Wireshark</a> as well because it has nice dissectors and a GUI. First, I loaded the usbmon module:</p>
 
 <p>
-  <code class="highlighter-rouge"># modprobe usbmon</code>
+  <code class="language-plaintext highlighter-rouge"># modprobe usbmon</code>
 </p>
 
 <p>This creates a device for each USB bus: /dev/usbmon1, /dev/usbmon2, … (usbmon0 is “all buses”). Now I need to determine which bus the drive is on:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>lsusb
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>lsusb
 $ lsusb
 Bus 001 Device 002: ID 0bc2:50a1 Seagate RSS LLC
 ...
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>The drive is on bus 1 (device 2). That means /dev/usbmon1 is the device I will use to capture traces. To avoid the need to run Wireshark as root, I modified the permissions of this device:</p>
 
 <p>
-  <code class="highlighter-rouge"># chmod o=rw /dev/usbmon1</code>
+  <code class="language-plaintext highlighter-rouge"># chmod o=rw /dev/usbmon1</code>
 </p>
 
 <p>
@@ -279,7 +284,10 @@ The resulting captures:</p>
 
 <p>Here’s the first SCSI command (0xFA), as printed in Wireshark:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>No.     Time           Source                Destination           Protocol Length Info
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>No.     Time           Source                Destination           Protocol Length Info
      71 0.098032000    host                  2.2                   USBMS    95     SCSI Command: 0xfa LUN:0x00 
 
 Frame 71: 95 bytes on wire (760 bits), 95 bytes captured (760 bits) on interface 0
@@ -303,28 +311,38 @@ SCSI CDB 0xfa
 0030  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00   ................
 0040  55 53 42 43 58 8d 4e 86 04 00 00 00 80 00 0a fa   USBCX.N.........
 0050  00 00 00 00 00 04 00 00 00 00 00 00 00 00 00      ...............
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
-<p>Wireshark is not as friendly as it could be here, it does not tell me whether this USBMS operation is IN or OUT. This can be determined by examining the Flags item under USB Mass Storage. <code class="highlighter-rouge">0x80 =&gt; IN</code>. Reading through <a href="https://github.com/torvalds/linux/blob/master/include/linux/usb/storage.h">storage.h</a> of the linux kernel source is helpful here as well.
+<p>Wireshark is not as friendly as it could be here, it does not tell me whether this USBMS operation is IN or OUT. This can be determined by examining the Flags item under USB Mass Storage. <code class="language-plaintext highlighter-rouge">0x80 =&gt; IN</code>. Reading through <a href="https://github.com/torvalds/linux/blob/master/include/linux/usb/storage.h">storage.h</a> of the linux kernel source is helpful here as well.
 This command is requesting 4 bytes from the drive (DataTransferLength).</p>
 
 <p>The data is returned in #74:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>No.     Time           Source                Destination           Protocol Length Info
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>No.     Time           Source                Destination           Protocol Length Info
      74 0.101040000    2.1                   host                  USB      68     URB_BULK in
 
 Frame 74: 68 bytes on wire (544 bits), 68 bytes captured (544 bits) on interface 0
 USB URB
 Leftover Capture Data: 01ff55aa
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
-<p>The interesting part is the “Leftover capture data”. These are the 4 bytes being received by the host (computer): <code class="highlighter-rouge">01 ff 55 aa</code>.</p>
+<p>The interesting part is the “Leftover capture data”. These are the 4 bytes being received by the host (computer): <code class="language-plaintext highlighter-rouge">01 ff 55 aa</code>.</p>
 
 <p>Moving on to the next SCSI command (0xF9):</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>No.     Time           Source                Destination           Protocol Length Info
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>No.     Time           Source                Destination           Protocol Length Info
     147 0.204948000    host                  2.2                   USBMS    95     SCSI Command: 0xf9 LUN:0x00 
 
 Frame 147: 95 bytes on wire (760 bits), 95 bytes captured (760 bits) on interface 0
@@ -337,20 +355,22 @@ USB Mass Storage
     .... 0000 = LUN: 0x00
     ...0 1010 = CDB Length: 0x0a
 SCSI CDB 0xf9
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
-<p>This command is sending 4 bytes to the drive. These bytes are in #149 and are: <code class="highlighter-rouge">02 ff 00 00</code>. I found the next SCSI command to be 0xF7 which reads in these bytes: <code class="highlighter-rouge">04 01 00 00</code>. The final command was 0xF8 which sends: <code class="highlighter-rouge">04 0f 00 00</code>. These are all the important parts.</p>
+<p>This command is sending 4 bytes to the drive. These bytes are in #149 and are: <code class="language-plaintext highlighter-rouge">02 ff 00 00</code>. I found the next SCSI command to be 0xF7 which reads in these bytes: <code class="language-plaintext highlighter-rouge">04 01 00 00</code>. The final command was 0xF8 which sends: <code class="language-plaintext highlighter-rouge">04 0f 00 00</code>. These are all the important parts.</p>
 
 <h2 id="tocAnchor-1-2-6">Capture Summary</h2>
 
 <p>Here is the sequence I observed:</p>
 
 <ul>
-  <li>Command 0xFA: Read: <code class="highlighter-rouge">01 ff 55 aa</code></li>
-  <li>Command 0xF9: Write: <code class="highlighter-rouge">02 ff 00 00</code></li>
-  <li>Command 0xF7: Read <code class="highlighter-rouge">04 01 00 00</code></li>
-  <li>Command 0xF8: Write <code class="highlighter-rouge">04 0f 00 00</code></li>
+  <li>Command 0xFA: Read: <code class="language-plaintext highlighter-rouge">01 ff 55 aa</code></li>
+  <li>Command 0xF9: Write: <code class="language-plaintext highlighter-rouge">02 ff 00 00</code></li>
+  <li>Command 0xF7: Read <code class="language-plaintext highlighter-rouge">04 01 00 00</code></li>
+  <li>Command 0xF8: Write <code class="language-plaintext highlighter-rouge">04 0f 00 00</code></li>
 </ul>
 
 <p>Based on the similarities, I made the following assumptions:</p>
@@ -392,22 +412,22 @@ SCSI CDB 0xf9
     <tr>
       <td>Read X</td>
       <td>0xFA</td>
-      <td><code class="highlighter-rouge">sg_raw -n -r 4 /dev/sdc fa 00 00 00 00 00 04 00 00 00</code></td>
+      <td><code class="language-plaintext highlighter-rouge">sg_raw -n -r 4 /dev/sdc fa 00 00 00 00 00 04 00 00 00</code></td>
     </tr>
     <tr>
       <td>Write X</td>
       <td>0xF9</td>
-      <td><code class="highlighter-rouge">echo -e "\x02\xff\x00\x00"</code> | <code class="highlighter-rouge">sg_raw -n -s 4 /dev/sdc f9 00 00 00 00 00 04 00 00 00</code></td>
+      <td><code class="language-plaintext highlighter-rouge">echo -e "\x02\xff\x00\x00"</code> | <code class="language-plaintext highlighter-rouge">sg_raw -n -s 4 /dev/sdc f9 00 00 00 00 00 04 00 00 00</code></td>
     </tr>
     <tr>
       <td>Read Y</td>
       <td>0xF7</td>
-      <td><code class="highlighter-rouge">sg_raw -n -r 4 /dev/sdc f7 00 00 00 00 00 04 00 00 00</code></td>
+      <td><code class="language-plaintext highlighter-rouge">sg_raw -n -r 4 /dev/sdc f7 00 00 00 00 00 04 00 00 00</code></td>
     </tr>
     <tr>
       <td>Write Y</td>
       <td>0xF8</td>
-      <td><code class="highlighter-rouge">echo -e "\x04\x0f\x00\x00"</code> | <code class="highlighter-rouge">sg_raw -n -s 4 /dev/sdc f8 00 00 00 00 00 04 00 00 00</code></td>
+      <td><code class="language-plaintext highlighter-rouge">echo -e "\x04\x0f\x00\x00"</code> | <code class="language-plaintext highlighter-rouge">sg_raw -n -s 4 /dev/sdc f8 00 00 00 00 00 04 00 00 00</code></td>
     </tr>
   </tbody>
 </table>
@@ -451,13 +471,18 @@ SCSI CDB 0xf9
 
 <p>So, the following sequence of commands should turn all status LEDs of this drive (and similar drives) on:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>###### Turn on activity LED, enable status LEDs ######
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>###### Turn on activity LED, enable status LEDs ######
 
 echo -e "\x02\xff\x00\x00" | sg_raw -n -s 4 /dev/sdc f9 00 00 00 00 00 04 00 00 00
 
 ###### Turn all status LEDs on ######
 echo -e "\xff\xff\x00\x00" | sg_raw -n -s 4 /dev/sdc f8 00 00 00 00 00 04 00 00 00
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <h2 id="tocAnchor-1-2-8">Conclusion</h2>
@@ -474,7 +499,7 @@ echo -e "\xff\xff\x00\x00" | sg_raw -n -s 4 /dev/sdc f8 00 00 00 00 00 04 00 00 
 
 <p>It stands to reason that sending raw SCSI commands to a drive is a restricted operation, not something a userland program can normally do.
 This is, however, something a service can do.
-Looking in services.msc I found “Seagate Dashboard Service” (<code class="highlighter-rouge">C:\Program Files\Seagate\Seagate Dashboard\SeagateDashboardService.exe</code>).</p>
+Looking in services.msc I found “Seagate Dashboard Service” (<code class="language-plaintext highlighter-rouge">C:\Program Files\Seagate\Seagate Dashboard\SeagateDashboardService.exe</code>).</p>
 
 <h2 id="tocAnchor-1-11-2">Debugging</h2>
 
@@ -482,14 +507,19 @@ Looking in services.msc I found “Seagate Dashboard Service” (<code class="hi
 I launched a debugger as an administrator and attached to the running SeagateDashboardService.exe process.
 The first thing I noticed was a bunch of messages printed out like:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 49) - RemoteServerImpl::DoRefreshCapacityLed() - Set new CapacityLedsOnCount=4
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 49) - RemoteServerImpl::DoRefreshCapacityLed() - Set new CapacityLedsOnCount=4
 I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 50) - RemoteServerImpl::GetAllExternalDrives() - Returning all cached drives. count=1
 I: 1/1/2014 1:35:22 AM (tid &lt;no name&gt;, 49) - RemoteServerImpl::SetSelectedDevice() - Set new device:GoFlex Desk - \\.\PHYSICALDRIVE1
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>So there is some debugging log that is being printed out which is nice.
-Looking through the recognized functions I can see there is some debugging info present as some functions have names (such as <code class="highlighter-rouge">stxdevif_?SendCommand@CsendToService@@QAEHXZ</code>). I can use something like <a href="http://demangler.com">demangler</a> to see what kind of signature these functions have without analyzing them a bunch.</p>
+Looking through the recognized functions I can see there is some debugging info present as some functions have names (such as <code class="language-plaintext highlighter-rouge">stxdevif_?SendCommand@CsendToService@@QAEHXZ</code>). I can use something like <a href="http://demangler.com">demangler</a> to see what kind of signature these functions have without analyzing them a bunch.</p>
 
 <p>There are a number of ways I can proceed from here:</p>
 

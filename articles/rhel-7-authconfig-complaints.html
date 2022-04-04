@@ -73,7 +73,7 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">RHEL 7 authconfig complaints</h1>
-    <p class="post-meta"><time datetime="2016-03-09T11:40:55-05:00" itemprop="datePublished">Mar 9, 2016</time></p>
+    <p class="post-meta"><time datetime="2016-03-09T10:40:55-06:00" itemprop="datePublished">Mar 9, 2016</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
@@ -94,8 +94,8 @@
 <p>Here are my complaints:</p>
 
 <ol>
-  <li>The manpage for authconfig is pretty sparse. In fact, it’s much more useful to run <code class="highlighter-rouge">authconfig --help</code> than it is <code class="highlighter-rouge">man authconfig</code>. This is the opposite of what it should be.</li>
-  <li>nslcd vs sssd. If you happen to have the sssd package installed at the time you run the authconfig utilities, sssd may be used. Otherwise, nslcd will be used. It will also depend on <code class="highlighter-rouge">--enablekrb5realmdns</code> / <code class="highlighter-rouge">--disablekrb5realmdns</code>. This is completely transparent to the user, no notification whatsoever.</li>
+  <li>The manpage for authconfig is pretty sparse. In fact, it’s much more useful to run <code class="language-plaintext highlighter-rouge">authconfig --help</code> than it is <code class="language-plaintext highlighter-rouge">man authconfig</code>. This is the opposite of what it should be.</li>
+  <li>nslcd vs sssd. If you happen to have the sssd package installed at the time you run the authconfig utilities, sssd may be used. Otherwise, nslcd will be used. It will also depend on <code class="language-plaintext highlighter-rouge">--enablekrb5realmdns</code> / <code class="language-plaintext highlighter-rouge">--disablekrb5realmdns</code>. This is completely transparent to the user, no notification whatsoever.</li>
   <li>authconfig-tui is deprecated, but still recommended by some experts. Perhaps due to the fact that the deprecation is mentioned half way through the manpage in a small notes section.</li>
   <li>All 3 interfaces have different feature sets. The plain authconfig interface exposes the most features. This may not be a huge issue, but I think the situation could be improved.</li>
 </ol>

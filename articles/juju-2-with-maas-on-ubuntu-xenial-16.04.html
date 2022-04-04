@@ -73,7 +73,7 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">JuJu 2 with MAAS on Ubuntu Xenial 16.04</h1>
-    <p class="post-meta"><time datetime="2016-09-20T02:04:56-04:00" itemprop="datePublished">Sep 20, 2016</time></p>
+    <p class="post-meta"><time datetime="2016-09-20T01:04:56-05:00" itemprop="datePublished">Sep 20, 2016</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
@@ -141,9 +141,9 @@ We will use a single physical host with a few KVM virtual machines that will ser
 
 <ol>
   <li>Install Ubuntu 16.04 (I used Desktop)</li>
-  <li>Install Packages: <code class="highlighter-rouge">sudo apt install -y qemu-system virt-manager openssh-server</code></li>
-  <li>Start services; <code class="highlighter-rouge">sudo systemctl enable libvirt-bin &amp;&amp; sudo systemctl start libvirt-bin</code></li>
-  <li>Adjust permissions <code class="highlighter-rouge">sudo usermod -a -G libvirtd &lt;YOUR_USERNAME&gt;</code></li>
+  <li>Install Packages: <code class="language-plaintext highlighter-rouge">sudo apt install -y qemu-system virt-manager openssh-server</code></li>
+  <li>Start services; <code class="language-plaintext highlighter-rouge">sudo systemctl enable libvirt-bin &amp;&amp; sudo systemctl start libvirt-bin</code></li>
+  <li>Adjust permissions <code class="language-plaintext highlighter-rouge">sudo usermod -a -G libvirtd &lt;YOUR_USERNAME&gt;</code></li>
   <li>Log out and log back in so the permissions take effect. (or use newgrp, or sudo as needed)</li>
   <li>Ensure the Ubuntu Server ISO is available at /var/lib/libvirt/images/.</li>
 </ol>
@@ -198,7 +198,7 @@ We will use a single physical host with a few KVM virtual machines that will ser
 <p>Verify this all works before continuing.</p>
 
 <p>Optionally, you may want to enable auto-starting for this VM:
-<code class="highlighter-rouge">virsh autostart maas-master</code></p>
+<code class="language-plaintext highlighter-rouge">virsh autostart maas-master</code></p>
 
 <h2 id="tocAnchor-1-2-4">Set Up DHCP</h2>
 
@@ -220,11 +220,11 @@ We will use a single physical host with a few KVM virtual machines that will ser
 
 <ol>
   <li>SSH to maas-master (192.168.100.2).</li>
-  <li>Install required libvirt client software: <code class="highlighter-rouge">sudo apt install libvirt-bin</code></li>
-  <li>Become the ‘maas’ user: <code class="highlighter-rouge">sudo su -ls /bin/bash maas</code></li>
-  <li>Create a key pair: <code class="highlighter-rouge">ssh-keygen -f /var/lib/maas/.ssh/id_rsa -qN ''</code></li>
-  <li>Copy the public key to the host system: <code class="highlighter-rouge">ssh-copy-id &lt;USERNAME_ON_HOST&gt;@192.168.100.1</code></li>
-  <li>Verify that things are working: <code class="highlighter-rouge">virsh -c qemu+ssh://&lt;USERNAME_ON_HOST&gt;@192.168.100.1/system list</code></li>
+  <li>Install required libvirt client software: <code class="language-plaintext highlighter-rouge">sudo apt install libvirt-bin</code></li>
+  <li>Become the ‘maas’ user: <code class="language-plaintext highlighter-rouge">sudo su -ls /bin/bash maas</code></li>
+  <li>Create a key pair: <code class="language-plaintext highlighter-rouge">ssh-keygen -f /var/lib/maas/.ssh/id_rsa -qN ''</code></li>
+  <li>Copy the public key to the host system: <code class="language-plaintext highlighter-rouge">ssh-copy-id &lt;USERNAME_ON_HOST&gt;@192.168.100.1</code></li>
+  <li>Verify that things are working: <code class="language-plaintext highlighter-rouge">virsh -c qemu+ssh://&lt;USERNAME_ON_HOST&gt;@192.168.100.1/system list</code></li>
 </ol>
 
 <h2 id="tocAnchor-1-2-6">Set Up MAAS Nodes</h2>
@@ -265,7 +265,7 @@ It will boot up and run some cloud-init routines and then reboot.</p>
   <img class="jslghtbx-thmb" src="/assets/images/53t.png" data-jslghtbx="/assets/images/53.png" data-jslghtbx-group="maas_node_power" data-jslghtbx-caption="1/1" style="" />
 </p>
 
-<p>The “Power address” I used here was <code class="highlighter-rouge">qemu+ssh://&lt;USERNAME_ON_HOST&gt;@192.168.100.1/system</code>.</p>
+<p>The “Power address” I used here was <code class="language-plaintext highlighter-rouge">qemu+ssh://&lt;USERNAME_ON_HOST&gt;@192.168.100.1/system</code>.</p>
 
 <p>Finally, we will want to ‘commission’ the node. This will power the VM up, network boot it, and gather information about the node (CPU core count, RAM, etc). It will then power down the node.</p>
 
@@ -277,7 +277,10 @@ It will boot up and run some cloud-init routines and then reboot.</p>
 
 <p>Now repeat this section until you have 4 nodes ready to as shown in the previous image. Alternatively you can automate most of this with something like this:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>virsh dumpxml maas-node1 &gt; node.xml
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>virsh dumpxml maas-node1 &gt; node.xml
 id=$(virsh domuuid maas-node1)
 for node in 2 3 4 5; do
     sed "s/maas-node1/maas-node$node/g" node.xml &gt; node$node.xml
@@ -286,7 +289,9 @@ for node in 2 3 4 5; do
     qemu-img create -f qcow2 /var/lib/libvirt/images/maas-node$node-2.qcow2 15G
     virsh define node$node.xml
 done
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>You’ll still need to virsh edit maas-node{2,3,4,5} and ensure MAC addresses are unique.</p>
@@ -300,7 +305,7 @@ done
 <p>We only need a single package here:</p>
 
 <p>
-  <code class="highlighter-rouge">sudo apt install -y juju-2.0</code>
+  <code class="language-plaintext highlighter-rouge">sudo apt install -y juju-2.0</code>
 </p>
 
 <h2 id="tocAnchor-1-9-2">JuJu+MAAS</h2>
@@ -308,34 +313,39 @@ done
 <p>We’ll need to create a file to describe our MAAS cloud:</p>
 
 <p>
-  <code class="highlighter-rouge">maascloud.yaml</code>
+  <code class="language-plaintext highlighter-rouge">maascloud.yaml</code>
 </p>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="s">clouds</span><span class="pi">:</span>
-  <span class="s">maascloud</span><span class="pi">:</span>
-    <span class="s">type</span><span class="pi">:</span> <span class="s">maas</span>
-    <span class="s">auth-types</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">oauth1</span><span class="pi">]</span>
-    <span class="s">endpoint</span><span class="pi">:</span> <span class="s1">'</span><span class="s">http://192.168.100.2:5240/MAAS'</span>
-</code></pre>
+<div class="language-yaml highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="na">clouds</span><span class="pi">:</span>
+  <span class="na">maascloud</span><span class="pi">:</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">maas</span>
+    <span class="na">auth-types</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">oauth1</span><span class="pi">]</span>
+    <span class="na">endpoint</span><span class="pi">:</span> <span class="s1">'</span><span class="s">http://192.168.100.2:5240/MAAS'</span>
+</code>
+    </pre>
+  </div>
 </div>
 
-<p>Now we can inform JuJu about this cloud: <code class="highlighter-rouge">juju add-cloud maascloud ~/maascloud.yaml</code></p>
+<p>Now we can inform JuJu about this cloud: <code class="language-plaintext highlighter-rouge">juju add-cloud maascloud ~/maascloud.yaml</code></p>
 
-<p>You can verify that it has been added with: <code class="highlighter-rouge">juju list-clouds</code> (look for local:maascloud)</p>
+<p>You can verify that it has been added with: <code class="language-plaintext highlighter-rouge">juju list-clouds</code> (look for local:maascloud)</p>
 
 <p>Now we’ll need to add credentials for MAAS.</p>
 
 <ol>
   <li>Navigate to http://192.168.100.2:5240/MAAS/account/prefs/ and grab the API key from the top of the page.</li>
-  <li>Run <code class="highlighter-rouge">juju add-credential maascloud</code>.</li>
+  <li>Run <code class="language-plaintext highlighter-rouge">juju add-credential maascloud</code>.</li>
   <li>Enter some name for the credential.</li>
   <li>Paste the API key from step 1.</li>
 </ol>
 
-<p>You can run <code class="highlighter-rouge">juju list-credentials</code> to verify the credentials were added.</p>
+<p>You can run <code class="language-plaintext highlighter-rouge">juju list-credentials</code> to verify the credentials were added.</p>
 
 <p>Finally we are ready to bootstrap JuJu in our MAAS cloud.
-<code class="highlighter-rouge">juju bootstrap maascloud-controller maascloud</code></p>
+<code class="language-plaintext highlighter-rouge">juju bootstrap maascloud-controller maascloud</code></p>
 
 <p>At this point JuJu should be up and running! You can now deploy applications and bundles on to the VMs (also in LXD containers on the VMs).</p>
 

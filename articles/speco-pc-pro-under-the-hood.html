@@ -73,7 +73,7 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">Speco PC Pro (Under the Hood)</h1>
-    <p class="post-meta"><time datetime="2013-07-18T07:25:55-04:00" itemprop="datePublished">Jul 18, 2013</time></p>
+    <p class="post-meta"><time datetime="2013-07-18T06:25:55-05:00" itemprop="datePublished">Jul 18, 2013</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
@@ -164,26 +164,26 @@ It has a (mostly) read-only drive with a ramdisk driver. No taskbar. No alt+tab,
 
 <p>I killed DVR.exe and found myself staring at…nothing.
 I tried starting explorer.exe but it only opened the folder view, it didn’t launch the full shell.
-I found the shell was set to some PC Pro executable, SN.exe, in the registry (<code class="highlighter-rouge">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell</code>).
+I found the shell was set to some PC Pro executable, SN.exe, in the registry (<code class="language-plaintext highlighter-rouge">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell</code>).
 I modified the shell back to explorer.exe and launched it with taskmgr.
 This did what I wanted but the machine would always reboot about a minute after killing DVR.exe.
 I traced this to a watchdog started in ArgusV.dll via DVR.exe (Argus 5, apparently the name of the PCIe card that handles video/sensors/relays).
 A simple solution was to kill DVR.exe very early during launch, before it called ArgusV.dll:A5_StartWatchDog.</p>
 
 <p>DVR.exe also had an annoying habit of hiding the taskbar so I found myself using WinSpy++ to unhide Shell_TrayWnd occasionally.
-Poking around in the registry, I found <code class="highlighter-rouge">HKLM\Software\DSS\DVR\System\DesktopLock</code> which seemed interesting.
+Poking around in the registry, I found <code class="language-plaintext highlighter-rouge">HKLM\Software\DSS\DVR\System\DesktopLock</code> which seemed interesting.
 However, I found that any modifications here were reset whenever DVR.exe was relaunched.
 The reason is that the system drive is a read-only ramdisk so DVR.exe was saving it’s settings elsewhere and then importing them into the registry at launch.
-I found the settings were stored in the Storage Path location <code class="highlighter-rouge">D:\DVRInfo\Registry.ini</code>.
+I found the settings were stored in the Storage Path location <code class="language-plaintext highlighter-rouge">D:\DVRInfo\Registry.ini</code>.
 This is just a renamed .reg file.
-Setting <code class="highlighter-rouge">"DesktopLock"=dword:00000000</code> in this INI file lessened some of the restrictions.</p>
+Setting <code class="language-plaintext highlighter-rouge">"DesktopLock"=dword:00000000</code> in this INI file lessened some of the restrictions.</p>
 
 <h1 id="tocAnchor-1-4">Booting Linux</h1>
 
 <p>Regardless, at this point I decided I wanted to try booting Linux.
 It PXE booted with no hassle.
 lsusb showed this interesting device:
-<code class="highlighter-rouge">Bus 001 Device 002: ID 04b4:0084 Cypress Semiconductor Corp. </code>
+<code class="language-plaintext highlighter-rouge">Bus 001 Device 002: ID 04b4:0084 Cypress Semiconductor Corp. </code>
 Searching the internet yielded no information on this specific VID:PID.
 I physically disassembled the DVR and found the front panel has a PCB with a <a href="http://www.cypress.com/?mpn=CY7C68013A-128AXC">CY7C68013A-128AXC</a> EZ-USB FX2LP. This is what controls the 8x2 LCD, LEDs, buttons, and infrared sensor.
 This is an interesting device that provides a USB interface and an 8051 MCU.
@@ -199,9 +199,14 @@ The advantage to doing it this way is that there is no hardware watchdog to get 
 
 <p>I used dd to make a copy of the DiskOnModule drive and created a VDI disk from it:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code># dd if=/dev/sdb of=sdb.dd
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code># dd if=/dev/sdb of=sdb.dd
 # VBoxManage convertdd sdb.dd sdb.vdi --format VDI
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>I then created a VM (Windows XP 32-bit, 1024MiB RAM) and launched it.
@@ -209,14 +214,14 @@ I connected the front panel USB cables to my development machine’s motherboard
 Once XP Embedded booted up, I was greeted with some error about a serial.
 This was the shell, SN.exe, likely checking the serial against some hardware signature and complaining.
 I decided to simply set the shell back to explorer.exe.
-I used <code class="highlighter-rouge">chntpw -e</code> on <code class="highlighter-rouge">\Windows\System32\config\SOFTWARE</code> (in the VDI) to edit the key <code class="highlighter-rouge">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell</code> and relaunched the VM.
+I used <code class="language-plaintext highlighter-rouge">chntpw -e</code> on <code class="language-plaintext highlighter-rouge">\Windows\System32\config\SOFTWARE</code> (in the VDI) to edit the key <code class="language-plaintext highlighter-rouge">HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell</code> and relaunched the VM.
 This results in a much more standard Windows XP experience.
 Now, I looked at the available USB devices in VirtualBox and found the familiar “Unknown device 04b4:0084”.
 Once connected, something interesting happened.
-I found the device disappeared and a new device appeared: <code class="highlighter-rouge">AverMedia SA7001</code>.
+I found the device disappeared and a new device appeared: <code class="language-plaintext highlighter-rouge">AverMedia SA7001</code>.
 What’s happening is the firmware is immediately being uploaded to the FX2LP which then “ReNumerates”.</p>
 
-<p>I loaded usbmon in my Linux host (<code class="highlighter-rouge">modprobe usbmon</code>) and launched Wireshark to capture the USB traffic.
+<p>I loaded usbmon in my Linux host (<code class="language-plaintext highlighter-rouge">modprobe usbmon</code>) and launched Wireshark to capture the USB traffic.
 I launched DVR.exe in the VM and captured a good bit of traffic.
 To be clear, it is not actually DVR.exe that is generating all this traffic, it’s FPanel.exe. The PC Pro software is a collection of separate programs that work together via FindWindow/PostMessage.
 So, I found that FPanel.exe, upon launching, performs an endless number of USB control IN transfers.
@@ -253,13 +258,13 @@ The first byte indicates an event:</p>
 A quick examination revealed there was a BULK endpoint which took a format like so:</p>
 
 <p>
-  <code class="highlighter-rouge">&lt;line&gt; &lt;char0&gt; ... &lt;char7&gt;</code>
+  <code class="language-plaintext highlighter-rouge">&lt;line&gt; &lt;char0&gt; ... &lt;char7&gt;</code>
 </p>
 
 <p>Where line was 0 for the first line of the LCD, 1 for the second. For example:</p>
 
 <p>
-  <code class="highlighter-rouge">0x00, Hello!!!</code>
+  <code class="language-plaintext highlighter-rouge">0x00, Hello!!!</code>
 </p>
 
 <p>For the LEDs I had to step through DVR.exe until I saw one of the LEDs change state and then review the USB traffic.
@@ -272,14 +277,14 @@ That required loading the firmware blob in Linux.</p>
 
 <p>Now, I could just try to extract the firmware from the usb traffic. However, there is an easier way.
 I downloaded the FX2LP Development Kit ISO from <a href="http://www.cypress.com/?rID=14321">here</a>.
-Reading the EZ-USB Development Kit User Guide revealed that the driver loading the firmware is CyLoad.sys (this can be verified in Device Manager). The INF file <code class="highlighter-rouge">/WINDOWS/INF/CyLoad.inf</code> indicated it loads <code class="highlighter-rouge">/WINDOWS/system32/CyLoad/CyLoad.spt</code>. The spt is a script file that contains .ihx (<a href="http://en.wikipedia.org/wiki/Intel_HEX">Intel Hex</a>) that is run on the 8051.
+Reading the EZ-USB Development Kit User Guide revealed that the driver loading the firmware is CyLoad.sys (this can be verified in Device Manager). The INF file <code class="language-plaintext highlighter-rouge">/WINDOWS/INF/CyLoad.inf</code> indicated it loads <code class="language-plaintext highlighter-rouge">/WINDOWS/system32/CyLoad/CyLoad.spt</code>. The spt is a script file that contains .ihx (<a href="http://en.wikipedia.org/wiki/Intel_HEX">Intel Hex</a>) that is run on the 8051.
 I found a tool to extract the .ihx files from the .spt script: <a href="https://ftp.dlitz.net/pub/dlitz/cyusb-fw-extract/current/cyusb-fw-extract.py">cyusb-fw-extract</a>
 I extracted the files with:
-<code class="highlighter-rouge">python2 cyusb-fw-extract.py -v -oavermedia ~/CyLoad.spt</code>
+<code class="language-plaintext highlighter-rouge">python2 cyusb-fw-extract.py -v -oavermedia ~/CyLoad.spt</code>
 With 76 warnings, it did manage to extract avermedia_1.ihx and avermedia_2.ihx (I renamed these to .hex).</p>
 
 <p>Control Center is the program that generates the spt script files.
-The source is available with the DVK at <code class="highlighter-rouge">C:\Cypress\Cypress Suite USB 3.4.7\CyUSB.NET\examples\Control Center\Form1.cs</code> so I decided if the .ihx files generated did not work, I would start my investigation there.</p>
+The source is available with the DVK at <code class="language-plaintext highlighter-rouge">C:\Cypress\Cypress Suite USB 3.4.7\CyUSB.NET\examples\Control Center\Form1.cs</code> so I decided if the .ihx files generated did not work, I would start my investigation there.</p>
 
 <p>So, I wondered, how can I load this firmware in Linux?</p>
 
@@ -290,17 +295,22 @@ However, only one wanted to work for me: <a href="http://www.triplespark.net/ele
 
 <p>After resetting the device (unplugging the USB cables so it shows up as 04b4:0084 again), I used the following sequence of commands:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code># ./cycfx2prog -id=04b4.0084 prg:avermedia_1.hex
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code># ./cycfx2prog -id=04b4.0084 prg:avermedia_1.hex
 # ./cycfx2prog -id=04b4.0084 run
 # ./cycfx2prog -id=04b4.0084 prg:avermedia_2.hex
 # ./cycfx2prog -id=04b4.0084 run
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Note: avermedia_1.hex is not actually necessary, it seems to be some kind of a stub.</p>
 
 <p>After this, the new device shows up on the USB bus:
-<code class="highlighter-rouge">Bus 001 Device 004: ID 07ca:a002 AVerMedia Technologies, Inc. </code></p>
+<code class="language-plaintext highlighter-rouge">Bus 001 Device 004: ID 07ca:a002 AVerMedia Technologies, Inc. </code></p>
 
 <h1 id="tocAnchor-1-8">Communicating with the firmware</h1>
 

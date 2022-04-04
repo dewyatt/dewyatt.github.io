@@ -73,7 +73,7 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">&quot;Initializing audio&quot; or &quot;Audio init failed&quot; on Blackboard in Linux</h1>
-    <p class="post-meta"><time datetime="2013-11-06T11:20:21-05:00" itemprop="datePublished">Nov 6, 2013</time></p>
+    <p class="post-meta"><time datetime="2013-11-06T10:20:21-06:00" itemprop="datePublished">Nov 6, 2013</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
@@ -147,13 +147,18 @@
 
 <p>It uses a bit of Javascript (<a href="http://demo2.wimba.com/demo/ve/play.js">play.js</a>) to generate an appropriate applet/object. It’s either not very up-to-date or just attempts to support very old software. A few choice lines:</p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nx">w_is_Windows95</span><span class="p">())</span> <span class="k">return</span> <span class="s2">"Windows 95"</span><span class="p">;</span>
+<div class="language-javascript highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="k">if</span> <span class="p">(</span><span class="nx">w_is_Windows95</span><span class="p">())</span> <span class="k">return</span> <span class="dl">"</span><span class="s2">Windows 95</span><span class="dl">"</span><span class="p">;</span>
 <span class="p">...</span>
 <span class="c1">// These result in a bug in Netscape 4.</span>
 <span class="c1">// Why take the chance of bugs with other browsers?</span>
 <span class="p">...</span>
 <span class="c1">//////////// Linux, Solaris, etc. (probably Netscape) ////////////</span>
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Windows 95 and Netscape? Not in my house.</p>
@@ -162,7 +167,10 @@
 
 <p>On Linux the Javascript will generate markup like this:</p>
 
-<div class="language-html highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;applet</span> <span class="na">codebase=</span><span class="s">"http://demo2.wimba.com:80"</span> <span class="na">code=</span><span class="s">"Player.class"</span> <span class="na">id=</span><span class="s">"player"</span> <span class="na">name=</span><span class="s">"player"</span> <span class="na">archive=</span><span class="s">"http://demo2.wimba.com:80/demo/code/hwclients.jar"</span> <span class="na">height=</span><span class="s">"48"</span> <span class="na">align=</span><span class="s">"bottom"</span> <span class="na">width=</span><span class="s">"240"</span><span class="nt">&gt;</span>
+<div class="language-html highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="nt">&lt;applet</span> <span class="na">codebase=</span><span class="s">"http://demo2.wimba.com:80"</span> <span class="na">code=</span><span class="s">"Player.class"</span> <span class="na">id=</span><span class="s">"player"</span> <span class="na">name=</span><span class="s">"player"</span> <span class="na">archive=</span><span class="s">"http://demo2.wimba.com:80/demo/code/hwclients.jar"</span> <span class="na">height=</span><span class="s">"48"</span> <span class="na">align=</span><span class="s">"bottom"</span> <span class="na">width=</span><span class="s">"240"</span><span class="nt">&gt;</span>
 <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"filename"</span> <span class="na">value=</span><span class="s">"http://demo2.wimba.com/demo/wizard/audio.wav"</span><span class="nt">&gt;</span>
 <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"loglevel"</span> <span class="na">value=</span><span class="s">"debug"</span><span class="nt">&gt;</span>
 <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"alt"</span> <span class="na">value=</span><span class="s">"[ Java Applet should load here ]"</span><span class="nt">&gt;</span>
@@ -182,7 +190,9 @@
 <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"error"</span><span class="nt">&gt;</span>Java is not installed, or the version of Java is too old.
 Please, run the <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"javascript:startwizard()"</span><span class="nt">&gt;</span>Setup Wizard<span class="nt">&lt;/a&gt;</span> and  select to install Java when prompted.<span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/applet&gt;</span>
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Now, in this case we can see one of the parameters is a .wav file. So we could just copy that link and access it directly.
@@ -193,13 +203,13 @@ However, let’s assume this isn’t always the case (it isn’t).</p>
 <p>One thing we can do is examine output in the Java Console. You can bring up the Java Control Panel to enable the Java Console:</p>
 
 <p>
-  <code class="highlighter-rouge">$ $JAVA_HOME/jre/bin/ControlPanel</code>
+  <code class="language-plaintext highlighter-rouge">$ $JAVA_HOME/jre/bin/ControlPanel</code>
 </p>
 
 <p>or, perhaps</p>
 
 <p>
-  <code class="highlighter-rouge">$ /usr/lib/jvm/java-7-oracle/bin/ControlPanel</code>
+  <code class="language-plaintext highlighter-rouge">$ /usr/lib/jvm/java-7-oracle/bin/ControlPanel</code>
 </p>
 
 <p>In the Advanced tab, enable logging and select “Show console”. Save those settings and restart your browser and the Java Console will present itself to you when a Java applet is run.</p>
@@ -207,13 +217,13 @@ However, let’s assume this isn’t always the case (it isn’t).</p>
 <p>The output I received initially included the following line:</p>
 
 <p>
-  <code class="highlighter-rouge">[info] AUDIOPROXY_ERR /home/daniel/.horizonwimba/JSecureDoor/audioproxy_1.0.4/data/audioproxy: error while loading shared libraries: libjack-0.100.0.so.0: cannot open shared object file: No such file or directory</code>
+  <code class="language-plaintext highlighter-rouge">[info] AUDIOPROXY_ERR /home/daniel/.horizonwimba/JSecureDoor/audioproxy_1.0.4/data/audioproxy: error while loading shared libraries: libjack-0.100.0.so.0: cannot open shared object file: No such file or directory</code>
 </p>
 
 <p>So, apparently the applet downloads and executes (ugh) this audioproxy program which tries to load a version of libjack that I don’t have. So, next I installed the (32-bit) jack library and created a symlink:</p>
 
 <p>
-  <code class="highlighter-rouge"># ln -s /usr/lib32/libjack.so.0 /usr/lib32/libjack-0.100.0.so.0</code>
+  <code class="language-plaintext highlighter-rouge"># ln -s /usr/lib32/libjack.so.0 /usr/lib32/libjack-0.100.0.so.0</code>
 </p>
 
 <p>This allowed things to proceed a little farther:</p>
@@ -225,7 +235,7 @@ However, let’s assume this isn’t always the case (it isn’t).</p>
 <p>The next console output had this error:</p>
 
 <p>
-  <code class="highlighter-rouge">[info] AUDIOPROXY_ERR PortAudio error at Unable to open streams: Illegal error number</code>
+  <code class="language-plaintext highlighter-rouge">[info] AUDIOPROXY_ERR PortAudio error at Unable to open streams: Illegal error number</code>
 </p>
 
 <p>If you search for “Unable to open streams: Illegal error number”, you’ll learn that the issue is related to OSS.
@@ -236,7 +246,7 @@ The solution is to load/install some sort of compatibility layer that supports O
 For me, this was simple:</p>
 
 <p>
-  <code class="highlighter-rouge"># modprobe snd_pcm_oss</code>
+  <code class="language-plaintext highlighter-rouge"># modprobe snd_pcm_oss</code>
 </p>
 
 <p>The kernel module snd_pcm_oss is part of the compatibility layer that allows OSS to work through ALSA.
@@ -249,8 +259,8 @@ You may also try osspd which is a userland solution.</p>
 <p>On a fresh install, this is all that is needed:</p>
 
 <ol>
-  <li><code class="highlighter-rouge">sudo apt-get install libc6:i386 libasound2:i386 libjack-jackd2-0:i386 osspd icedtea-plugin</code></li>
-  <li><code class="highlighter-rouge">sudo ln -s /usr/lib/i386-linux-gnu/libjack.so.0 /usr/lib/i386-linux-gnu/libjack-0.100.0.so.0</code></li>
+  <li><code class="language-plaintext highlighter-rouge">sudo apt-get install libc6:i386 libasound2:i386 libjack-jackd2-0:i386 osspd icedtea-plugin</code></li>
+  <li><code class="language-plaintext highlighter-rouge">sudo ln -s /usr/lib/i386-linux-gnu/libjack.so.0 /usr/lib/i386-linux-gnu/libjack-0.100.0.so.0</code></li>
 </ol>
 
 <h2 id="tocAnchor-1-6-2">Generic</h2>
@@ -258,10 +268,10 @@ You may also try osspd which is a userland solution.</p>
 <ol>
   <li>Install the required 32-bit libraries: libc6 libasound2 libjack</li>
   <li>Create a symlink to the 32-bit jack library:
-Example: <code class="highlighter-rouge">ln -s /usr/lib32/libjack.so.0 /usr/lib32/libjack-0.100.0.so.0</code></li>
+Example: <code class="language-plaintext highlighter-rouge">ln -s /usr/lib32/libjack.so.0 /usr/lib32/libjack-0.100.0.so.0</code></li>
   <li>Load OSS compatibility:
 This varies by distribution.
-If you’re lucky, it will be as simple as: <code class="highlighter-rouge">modprobe snd_pcm_oss</code></li>
+If you’re lucky, it will be as simple as: <code class="language-plaintext highlighter-rouge">modprobe snd_pcm_oss</code></li>
 </ol>
 
 <p>Ta da!</p>

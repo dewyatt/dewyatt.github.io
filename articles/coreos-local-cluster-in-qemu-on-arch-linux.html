@@ -73,7 +73,7 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">CoreOS local cluster in QEMU on Arch Linux</h1>
-    <p class="post-meta"><time datetime="2016-07-26T12:55:52-04:00" itemprop="datePublished">Jul 26, 2016</time></p>
+    <p class="post-meta"><time datetime="2016-07-26T11:55:52-05:00" itemprop="datePublished">Jul 26, 2016</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
@@ -155,7 +155,10 @@
   <li>Create the pxelinux configuration.</li>
 </ul>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>pacman -S tftp-hpa
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>pacman -S tftp-hpa
 systemctl enable tftpd
 systemctl start tftpd
 
@@ -167,17 +170,27 @@ pacman -S wget
 cd /srv/tftp
 wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe.vmlinuz
 wget https://stable.release.core-os.net/amd64-usr/current/coreos_production_pxe_image.cpio.gz
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <h2 id="tocAnchor-1-2-2">Configure PXELINUX</h2>
 
 <p>Now we can create the pxelinux configuration. Note that we are passing the cloud-config-url kernel parameter.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>mkdir /srv/tftp/pxelinux.cfg
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>mkdir /srv/tftp/pxelinux.cfg
+</code>
+    </pre>
+  </div>
 </div>
-<div class="highlighter-rouge"><pre class="highlight"><code># /srv/tftp/pxelinux.cfg/default
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code># /srv/tftp/pxelinux.cfg/default
 default coreos
 prompt 1
 timeout 15
@@ -187,7 +200,9 @@ label coreos
   menu default
   kernel coreos_production_pxe.vmlinuz
   append initrd=coreos_production_pxe_image.cpio.gz cloud-config-url=http://archvmhost/coreos-cloud-config.yaml
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <h1 id="tocAnchor-1-5">Set up the Virtual Machine Host</h1>
@@ -198,13 +213,21 @@ label coreos
 
 <p>First, install nginx:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>pacman -S nginx
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>pacman -S nginx
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Now we can create our nginx config, overwriting what is already there.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code># /etc/nginx/nginx.conf
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code># /etc/nginx/nginx.conf
 worker_processes  1;
 
 events {
@@ -239,7 +262,9 @@ http {
         }
     }
 }
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Here I’m only adding support for the $private_ipv4 substitution. In my case this is all on a local network so $remote_addr is an appropriate value to substitute. The $dollar variable is necessary to avoid nginx’s variable substitution here, it’s an ugly workaround but it works.</p>
@@ -248,9 +273,14 @@ http {
 
 <p>Now we can enable and start nginx.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>systemctl enable nginx
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>systemctl enable nginx
 systemctl start nginx
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <h2 id="tocAnchor-1-5-2">Create a Bridge</h2>
@@ -262,70 +292,110 @@ I am going to use systemd-networkd to create a permanent bridge named br0 with a
 
 <p>First, I will create a few files to describe the network configuration.</p>
 
-<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="c"># /etc/systemd/network/br0.netdev
+<div class="language-ini highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="c"># /etc/systemd/network/br0.netdev
 </span><span class="nn">[NetDev]</span>
 <span class="py">Name</span><span class="p">=</span><span class="s">br0</span>
 <span class="py">Kind</span><span class="p">=</span><span class="s">bridge</span>
 <span class="c"># Optionally specify a link address
 # Useful if you have DHCP reservations (aka static DHCP)
 </span><span class="py">MACAddress</span><span class="p">=</span><span class="s">01:23:45:67:89:AB</span>
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
-<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="c"># /etc/systemd/network/br0.network
+<div class="language-ini highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="c"># /etc/systemd/network/br0.network
 </span><span class="nn">[Match]</span>
 <span class="py">Name</span><span class="p">=</span><span class="s">br0</span>
 
 <span class="nn">[Network]</span>
 <span class="py">DHCP</span><span class="p">=</span><span class="s">ipv4</span>
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
-<div class="language-ini highlighter-rouge"><pre class="highlight"><code><span class="c"># /etc/systemd/network/br0-slave.network
+<div class="language-ini highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="c"># /etc/systemd/network/br0-slave.network
 </span><span class="nn">[Match]</span>
 <span class="py">Name</span><span class="p">=</span><span class="s">eno1</span>
 
 <span class="nn">[Network]</span>
 <span class="py">Bridge</span><span class="p">=</span><span class="s">br0</span>
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Now I need to disable dhcpcd, which I was using previously, and enable systemd-networkd instead.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>systemctl disable dhcpcd
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>systemctl disable dhcpcd
 systemctl enable systemd-networkd
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>After a reboot (I don’t recommend doing this remotely), connectivity should be back up as normal but with br0 having acquired a DHCP lease, rather than eno1.</p>
 
 <p>Finally, we need to whitelist the bridge interface for QEMU:</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir -p /etc/qemu
-<span class="nb">echo</span> <span class="s1">'allow br0'</span> &gt;&gt; /etc/qemu/bridge.conf
-</code></pre>
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="nb">mkdir</span> <span class="nt">-p</span> /etc/qemu
+<span class="nb">echo</span> <span class="s1">'allow br0'</span> <span class="o">&gt;&gt;</span> /etc/qemu/bridge.conf
+</code>
+    </pre>
+  </div>
 </div>
 
 <h2 id="tocAnchor-1-5-3">Enable KSM (Optional)</h2>
 
 <p>We can use <a href="http://www.linux-kvm.org/page/KSM">Kernel Samepage Merging</a> to save on memory consumption. You can search the QEMU source for MADV_MERGEABLE to get an idea of what memory is shared.</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># Enable KSM</span>
-<span class="nb">echo </span>1 &gt; /sys/kernel/mm/ksm/run
-</code></pre>
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="c"># Enable KSM</span>
+<span class="nb">echo </span>1 <span class="o">&gt;</span> /sys/kernel/mm/ksm/run
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>You may want to put this in a startup service to make it permanent.</p>
 
 <p>Later on, after starting our virtual machines, we can see how much memory we have saved:</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">echo</span> <span class="k">$((</span> <span class="k">$(</span>cat /sys/kernel/mm/ksm/pages_sharing<span class="k">)</span> <span class="o">*</span> <span class="k">$(</span>getconf PAGESIZE<span class="k">)</span> <span class="k">))</span> | numfmt --to<span class="o">=</span>iec-i
-</code></pre>
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="nb">echo</span> <span class="k">$((</span> <span class="si">$(</span><span class="nb">cat</span> /sys/kernel/mm/ksm/pages_sharing<span class="si">)</span> <span class="o">*</span> <span class="si">$(</span>getconf PAGESIZE<span class="si">)</span> <span class="k">))</span> | <span class="nb">numfmt</span> <span class="nt">--to</span><span class="o">=</span>iec-i
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>In my tests I was seeing ~4GiB saved with 20 CoreOS VMs. That may not seem like a ton but it definitely adds up when operating at scale. You can also see how much memory is being shared between the processes:</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">echo</span> <span class="k">$((</span> <span class="k">$(</span>cat /sys/kernel/mm/ksm/pages_shared<span class="k">)</span> <span class="o">*</span> <span class="k">$(</span>getconf PAGESIZE<span class="k">)</span> <span class="k">))</span> | numfmt --to<span class="o">=</span>iec-i
-</code></pre>
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="nb">echo</span> <span class="k">$((</span> <span class="si">$(</span><span class="nb">cat</span> /sys/kernel/mm/ksm/pages_shared<span class="si">)</span> <span class="o">*</span> <span class="si">$(</span>getconf PAGESIZE<span class="si">)</span> <span class="k">))</span> | <span class="nb">numfmt</span> <span class="nt">--to</span><span class="o">=</span>iec-i
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>For me this was ~219MiB. The chart below demonstrates that we have steeper memory usage growth without KSM.</p>
@@ -382,35 +452,40 @@ systemctl enable systemd-networkd
 
 <h1 id="tocAnchor-1-9">Create a Cloudinit Template</h1>
 
-<p>Finally we can create our cloudinit config template. I say template because we are going to put in a placeholder for <code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> that a script will replace when run.</p>
+<p>Finally we can create our cloudinit config template. I say template because we are going to put in a placeholder for <code class="language-plaintext highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> that a script will replace when run.</p>
 
 <p>You will want to substitute your own public key here for SSH access (username ‘core’). Or you could create a separate user as documented in the CoreOS cloudinit docs.</p>
 
 <p>
-  <code class="highlighter-rouge">coreos-cloud-config.yaml.template</code>
+  <code class="language-plaintext highlighter-rouge">coreos-cloud-config.yaml.template</code>
 </p>
 
-<div class="language-yaml highlighter-rouge"><pre class="highlight"><code><span class="c1">#cloud-config</span>
-<span class="s">ssh_authorized_keys</span><span class="pi">:</span>
+<div class="language-yaml highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="c1">#cloud-config</span>
+<span class="na">ssh_authorized_keys</span><span class="pi">:</span>
   <span class="pi">-</span> <span class="s">ssh-rsa AAAAB3NzaC1yc2[...] (REPLACE THIS)</span>
 
-<span class="s">coreos</span><span class="pi">:</span>
-  <span class="s">units</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">etcd2.service</span>
-      <span class="s">command</span><span class="pi">:</span> <span class="s">start</span>
-    <span class="pi">-</span> <span class="s">name</span><span class="pi">:</span> <span class="s">fleet.service</span>
-      <span class="s">command</span><span class="pi">:</span> <span class="s">start</span>
+<span class="na">coreos</span><span class="pi">:</span>
+  <span class="na">units</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">etcd2.service</span>
+      <span class="na">command</span><span class="pi">:</span> <span class="s">start</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">fleet.service</span>
+      <span class="na">command</span><span class="pi">:</span> <span class="s">start</span>
 
-  <span class="s">etcd2</span><span class="pi">:</span>
-    <span class="s">discovery</span><span class="pi">:</span> <span class="s">&lt;DISCOVERY_URL&gt;</span>
-    <span class="s">advertise-client-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2379"</span>
-    <span class="s">initial-advertise-peer-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2380"</span>
-    <span class="s">listen-client-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://0.0.0.0:2379"</span>
-    <span class="s">listen-peer-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2380"</span>
-</code></pre>
+  <span class="na">etcd2</span><span class="pi">:</span>
+    <span class="na">discovery</span><span class="pi">:</span> <span class="s">&lt;DISCOVERY_URL&gt;</span>
+    <span class="na">advertise-client-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2379"</span>
+    <span class="na">initial-advertise-peer-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2380"</span>
+    <span class="na">listen-client-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://0.0.0.0:2379"</span>
+    <span class="na">listen-peer-urls</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://$private_ipv4:2380"</span>
+</code>
+    </pre>
+  </div>
 </div>
 
-<p><code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> would normally look something like this: <code class="highlighter-rouge">https://discovery.etcd.io/9e0aeb71f9b477f38e953f0050478666</code>. However, these URLs are one-time use (for each cluster) and require knowing the cluster size ahead of time. They are generated by going to a URL like: <code class="highlighter-rouge">https://discovery.etcd.io/new?size=3</code>.</p>
+<p><code class="language-plaintext highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> would normally look something like this: <code class="language-plaintext highlighter-rouge">https://discovery.etcd.io/9e0aeb71f9b477f38e953f0050478666</code>. However, these URLs are one-time use (for each cluster) and require knowing the cluster size ahead of time. They are generated by going to a URL like: <code class="language-plaintext highlighter-rouge">https://discovery.etcd.io/new?size=3</code>.</p>
 
 <p>Because of this, we put in a placeholder that our script will substitute after dynamically allocating a new discovery URL during invocation.</p>
 
@@ -418,18 +493,26 @@ systemctl enable systemd-networkd
 
 <p>First, we need qemu:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>pacman -S qemu
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>pacman -S qemu
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Then, we’ll put a little script together:</p>
 
 <p>
-  <code class="highlighter-rouge">start_coreos_cluster.sh</code>
+  <code class="language-plaintext highlighter-rouge">start_coreos_cluster.sh</code>
 </p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
-<span class="nb">set</span> -eu -o pipefail
+<div class="language-bash highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code><span class="c">#!/bin/bash</span>
+<span class="nb">set</span> <span class="nt">-eu</span> <span class="nt">-o</span> pipefail
 
 <span class="nv">USAGE</span><span class="o">=</span><span class="s2">"Usage: </span><span class="nv">$0</span><span class="s2"> &lt;cloudinit-template&gt; &lt;count&gt;"</span>
 
@@ -443,43 +526,45 @@ systemctl enable systemd-networkd
     <span class="nb">exit </span>1
 <span class="o">}</span>
 
-<span class="o">[[</span> <span class="nv">$# </span>-ne 2 <span class="o">]]</span> <span class="o">&amp;&amp;</span> usage
+<span class="o">[[</span> <span class="nv">$# </span><span class="nt">-ne</span> 2 <span class="o">]]</span> <span class="o">&amp;&amp;</span> usage
 
 <span class="nv">cloudinit_template</span><span class="o">=</span><span class="nv">$1</span>
 <span class="nv">count</span><span class="o">=</span><span class="nv">$2</span>
 
-<span class="nv">discovery_url</span><span class="o">=</span><span class="k">$(</span>curl -s <span class="s2">"https://discovery.etcd.io/new?size=</span><span class="nv">$count</span><span class="s2">"</span><span class="k">)</span>
+<span class="nv">discovery_url</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="s2">"https://discovery.etcd.io/new?size=</span><span class="nv">$count</span><span class="s2">"</span><span class="si">)</span>
 <span class="nb">echo</span> <span class="s2">"Discovery URL: </span><span class="nv">$discovery_url</span><span class="s2">"</span>
 
-sed <span class="s2">"s|&lt;DISCOVERY_URL&gt;|</span><span class="nv">$discovery_url</span><span class="s2">|"</span> <span class="s2">"</span><span class="nv">$cloudinit_template</span><span class="s2">"</span> &gt; /srv/http/coreos-cloud-config.yaml
+<span class="nb">sed</span> <span class="s2">"s|&lt;DISCOVERY_URL&gt;|</span><span class="nv">$discovery_url</span><span class="s2">|"</span> <span class="s2">"</span><span class="nv">$cloudinit_template</span><span class="s2">"</span> <span class="o">&gt;</span> /srv/http/coreos-cloud-config.yaml
 
-<span class="k">for</span> <span class="o">((</span> i <span class="o">=</span> 1; i &lt;<span class="o">=</span> <span class="nv">$count</span>; i++ <span class="o">))</span>
+<span class="k">for</span> <span class="o">((</span> i <span class="o">=</span> 1<span class="p">;</span> i &lt;<span class="o">=</span> <span class="nv">$count</span><span class="p">;</span> i++ <span class="o">))</span>
 <span class="k">do
-    </span><span class="nv">digits</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf</span> <span class="s2">"%02x"</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span><span class="k">)</span>
+    </span><span class="nv">digits</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%02x"</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span><span class="si">)</span>
     <span class="nv">vm_name</span><span class="o">=</span><span class="s2">"coreos_</span><span class="nv">$digits</span><span class="s2">"</span>
     <span class="nv">vm_mac</span><span class="o">=</span><span class="s2">"52:54:00:12:34:</span><span class="nv">$digits</span><span class="s2">"</span>
-    qemu-system-x86_64 -name <span class="s2">"</span><span class="nv">$vm_name</span><span class="s2">"</span> <span class="se">\</span>
-        -m 1024 <span class="se">\</span>
-        -net bridge <span class="se">\</span>
-        -net nic,vlan<span class="o">=</span>0,model<span class="o">=</span>virtio,macaddr<span class="o">=</span><span class="nv">$vm_mac</span> <span class="se">\</span>
-        -boot n <span class="se">\</span>
-        -machine <span class="nv">accel</span><span class="o">=</span>kvm <span class="se">\</span>
-        -cpu host <span class="se">\</span>
-        -smp <span class="s2">"</span><span class="nv">$VM_CORES</span><span class="s2">"</span> <span class="se">\</span>
-        -display none &amp;
+    qemu-system-x86_64 <span class="nt">-name</span> <span class="s2">"</span><span class="nv">$vm_name</span><span class="s2">"</span> <span class="se">\</span>
+        <span class="nt">-m</span> 1024 <span class="se">\</span>
+        <span class="nt">-net</span> bridge <span class="se">\</span>
+        <span class="nt">-net</span> nic,vlan<span class="o">=</span>0,model<span class="o">=</span>virtio,macaddr<span class="o">=</span><span class="nv">$vm_mac</span> <span class="se">\</span>
+        <span class="nt">-boot</span> n <span class="se">\</span>
+        <span class="nt">-machine</span> <span class="nv">accel</span><span class="o">=</span>kvm <span class="se">\</span>
+        <span class="nt">-cpu</span> host <span class="se">\</span>
+        <span class="nt">-smp</span> <span class="s2">"</span><span class="nv">$VM_CORES</span><span class="s2">"</span> <span class="se">\</span>
+        <span class="nt">-display</span> none &amp;
 
-    sleep <span class="s2">"</span><span class="nv">$STAGGER_TIME_SEC</span><span class="s2">"</span>
+    <span class="nb">sleep</span> <span class="s2">"</span><span class="nv">$STAGGER_TIME_SEC</span><span class="s2">"</span>
 <span class="k">done</span>
-</code></pre>
+</code>
+    </pre>
+  </div>
 </div>
 
-<p>We can call this like so: <code class="highlighter-rouge">./start_coreos_cluster.sh coreos-cloud-config.yaml.template 3</code> to start a 3-node CoreOS cluster.</p>
+<p>We can call this like so: <code class="language-plaintext highlighter-rouge">./start_coreos_cluster.sh coreos-cloud-config.yaml.template 3</code> to start a 3-node CoreOS cluster.</p>
 
 <p>The script does the following:</p>
 
 <ul>
   <li>Retrieves a new discovery URL based on the size of the cluster specified.</li>
-  <li>Substitutes that URL in place of the <code class="highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> placeholder in the specified config template.</li>
+  <li>Substitutes that URL in place of the <code class="language-plaintext highlighter-rouge">&lt;DISCOVERY_URL&gt;</code> placeholder in the specified config template.</li>
   <li>Starts a QEMU VM in the background that will network boot. The MAC addresses are specifically set to avoid conflicts.</li>
 </ul>
 
@@ -523,75 +608,288 @@ sed <span class="s2">"s|&lt;DISCOVERY_URL&gt;|</span><span class="nv">$discovery
 
 <p>First, check the discovery URL in a browser or with curl. For example:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>curl -s https://discovery.etcd.io/57de7e09a1376036179ca4b3092f40cc | jq
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>curl -s https://discovery.etcd.io/57de7e09a1376036179ca4b3092f40cc | jq
+</code>
+    </pre>
+  </div>
 </div>
-<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"node"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"dir"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/3470e6055e4e1119"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a1576454e3bf449d9fd98c3d6b28006a=http://192.168.5.236:2380"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021445</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021445</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/dc0df5ec4a3f1c1f"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"002ce5c216ec446fad0fdf28c4f75b51=http://192.168.5.200:2380"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021527</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021527</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/cd968f42a6e76ec6"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c1dff243172643eea483aea66984545a=http://192.168.5.237:2380"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021548</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021548</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/dec55d937871aa93"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3ba8ca7970d64d87a395e668de7d8908=http://192.168.5.229:2380"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021567</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021567</span><span class="w">
-      </span><span class="p">},</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/a365ceee28d65bb5"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dd219995e6c04162b5520d7313148dfe=http://192.168.5.231:2380"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021633</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149021633</span><span class="w">
-      </span><span class="p">}</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="nt">"modifiedIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149020480</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"createdIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">1149020480</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
+<div class="language-json highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>
+        <span class="p">{</span>
+        <span class="w">
+  </span>
+        <span class="nl">"action"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"get"</span>
+        <span class="p">,</span>
+        <span class="w">
+  </span>
+        <span class="nl">"node"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="p">{</span>
+        <span class="w">
+    </span>
+        <span class="nl">"key"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc"</span>
+        <span class="p">,</span>
+        <span class="w">
+    </span>
+        <span class="nl">"dir"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="kc">true</span>
+        <span class="p">,</span>
+        <span class="w">
+    </span>
+        <span class="nl">"nodes"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="p">[</span>
+        <span class="w">
+      </span>
+        <span class="p">{</span>
+        <span class="w">
+        </span>
+        <span class="nl">"key"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/3470e6055e4e1119"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"value"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"a1576454e3bf449d9fd98c3d6b28006a=http://192.168.5.236:2380"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"modifiedIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021445</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"createdIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021445</span>
+        <span class="w">
+      </span>
+        <span class="p">},</span>
+        <span class="w">
+      </span>
+        <span class="p">{</span>
+        <span class="w">
+        </span>
+        <span class="nl">"key"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/dc0df5ec4a3f1c1f"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"value"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"002ce5c216ec446fad0fdf28c4f75b51=http://192.168.5.200:2380"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"modifiedIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021527</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"createdIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021527</span>
+        <span class="w">
+      </span>
+        <span class="p">},</span>
+        <span class="w">
+      </span>
+        <span class="p">{</span>
+        <span class="w">
+        </span>
+        <span class="nl">"key"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/cd968f42a6e76ec6"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"value"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"c1dff243172643eea483aea66984545a=http://192.168.5.237:2380"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"modifiedIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021548</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"createdIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021548</span>
+        <span class="w">
+      </span>
+        <span class="p">},</span>
+        <span class="w">
+      </span>
+        <span class="p">{</span>
+        <span class="w">
+        </span>
+        <span class="nl">"key"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/dec55d937871aa93"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"value"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"3ba8ca7970d64d87a395e668de7d8908=http://192.168.5.229:2380"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"modifiedIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021567</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"createdIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021567</span>
+        <span class="w">
+      </span>
+        <span class="p">},</span>
+        <span class="w">
+      </span>
+        <span class="p">{</span>
+        <span class="w">
+        </span>
+        <span class="nl">"key"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"/_etcd/registry/57de7e09a1376036179ca4b3092f40cc/a365ceee28d65bb5"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"value"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="s2">"dd219995e6c04162b5520d7313148dfe=http://192.168.5.231:2380"</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"modifiedIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021633</span>
+        <span class="p">,</span>
+        <span class="w">
+        </span>
+        <span class="nl">"createdIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149021633</span>
+        <span class="w">
+      </span>
+        <span class="p">}</span>
+        <span class="w">
+    </span>
+        <span class="p">],</span>
+        <span class="w">
+    </span>
+        <span class="nl">"modifiedIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149020480</span>
+        <span class="p">,</span>
+        <span class="w">
+    </span>
+        <span class="nl">"createdIndex"</span>
+        <span class="p">:</span>
+        <span class="w"> </span>
+        <span class="mi">1149020480</span>
+        <span class="w">
+  </span>
+        <span class="p">}</span>
+        <span class="w">
+</span>
+        <span class="p">}</span>
+        <span class="w">
+</span>
+      </code>
+    </pre>
+  </div>
 </div>
 <p>Here I’m piping the output to the ‘jq’ utility for pretty formatting. You can see all 3 nodes in the array have registered. If this were not the case, the nodes array would be empty or would not exist.</p>
 
 <p>Another thing to do is to simply login to one of the CoreOS nodes and do something like:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>etcdctl cluster-health
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>etcdctl cluster-health
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Then you may want to throw some data into etcd:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>etcdctl mk /testing testdata
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>etcdctl mk /testing testdata
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>Now on other nodes, make sure the data is there:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>etcdctl get /testing
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>etcdctl get /testing
+</code>
+    </pre>
+  </div>
 </div>
 
 <p>or</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>curl -sL http://127.0.0.1:2379/v2/keys/testing
-</code></pre>
+<div class="language-plaintext highlighter-rouge">
+  <div class="highlight">
+    <pre class="highlight">
+      <code>curl -sL http://127.0.0.1:2379/v2/keys/testing
+</code>
+    </pre>
+  </div>
 </div>
 
   </div>

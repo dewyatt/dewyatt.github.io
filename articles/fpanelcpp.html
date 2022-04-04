@@ -73,13 +73,13 @@
 
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">fpanel.cpp</h1>
-    <p class="post-meta"><time datetime="2013-08-25T13:30:56-04:00" itemprop="datePublished">Aug 25, 2013</time></p>
+    <p class="post-meta"><time datetime="2013-08-25T12:30:56-05:00" itemprop="datePublished">Aug 25, 2013</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
     <p>This example uses libusbx to communicate with the AVerMedia SA7001 firmware.</p>
 
-<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -199,7 +199,8 @@
 118
 119
 120
-121</pre></td><td class="code"><pre><span class="cm">/**
+121
+</pre></td><td class="code"><pre><span class="cm">/**
 * The MIT License (MIT)
 *
 * Copyright (c) 2013 Daniel Wyatt
@@ -226,13 +227,13 @@
   This code is for communicating with the stock firmware of a
   Speco PC Pro front panel (AVerMedia SA7001).
 */</span>
-<span class="cp">#include &lt;cstdio&gt;
-#include &lt;cstdlib&gt;
-#include &lt;cstring&gt;
-#include &lt;string&gt;
+<span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;cstring&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
 </span>
 <span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
-<span class="cp">#include &lt;libusb.h&gt;
+<span class="cp">#include</span> <span class="cpf">&lt;libusb.h&gt;</span><span class="cp">
 </span><span class="p">}</span>
 
 <span class="cp">#define TIMEOUT_MS      10
@@ -247,8 +248,8 @@
 #define LED_RECORDING   2
 #define LED_OFF         3
 </span>
-<span class="c1">//is the FN button active?
-</span><span class="cp">#define FLAGS_FN        (1 &lt;&lt; 7)
+<span class="c1">//is the FN button active?</span>
+<span class="cp">#define FLAGS_FN        (1 &lt;&lt; 7)
 </span>
 <span class="k">namespace</span> <span class="n">fpanel</span> <span class="p">{</span>
 
@@ -319,8 +320,8 @@
     <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
 
 
   </div>
