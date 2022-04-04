@@ -12,6 +12,8 @@ theme: minima
 
 permalink: /:categories/:title
 
-gems:
+plugins:
 - nokogiri
+
+exclude: [bundle]
 
