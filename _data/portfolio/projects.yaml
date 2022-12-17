@@ -1,4 +1,13 @@
 ---
+- name: spr332-v2 utils
+  description: 'Utilities for interacting with the Identiv SPR332 v2 pinpad.'
+  image: 59.png
+  thumbnail: 59t.png
+  links:
+    - name: github
+      url: https://github.com/dewyatt/spr332v2-utils
+      icon: github-circled
+
 - name: Bitsee
   description: 'Ruby on Rails bitcoin blockchain embedded data extractor/viewer.'
   image: 58.png
